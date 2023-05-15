@@ -12,14 +12,17 @@ public class GameManager : MonoBehaviour
     private int[] ratHighScoreIndex;
     //プレイヤーが出したスコア
     private int playerScore;
-
+    //scoreManager
+    private scoreManager sm;
+    //
+    private PlayerPalmate pp;
+    
     //プロパティ
     public int PlayerScore
     {
         get { return this.playerScore;}
         set { this.playerScore = value;}
     }
-
     //シングルトン
     private void Awake()
     {
@@ -29,6 +32,10 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //参照
+        sm = GetComponent<scoreManager>();
+        pp = GetComponent<PlayerPalmate>();
+
         //要素数の定義
         cowHighScoreIndex = new int[5];
         ratHighScoreIndex = new int[5];
@@ -43,15 +50,10 @@ public class GameManager : MonoBehaviour
         //ゲームのスコアの初期化
         playerScore = 0;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     
     public void UpdateRanking()
     {
+        playerScore = pp.Score;
         for(int count = 4; count >= 0; count--)
         {
             if(playerScore >= cowHighScoreIndex[count])
@@ -61,22 +63,5 @@ public class GameManager : MonoBehaviour
                 cowHighScoreIndex[count] = playerScore;
             }
         }
-    }
-
-    public void BackGame()
-    {
-
-    }
-
-    public void GoTitle()
-    {
-        playerScore = 0;
-        SceneManager.LoadScene("TitleScene");
-    }
-
-    public void LoadGame()
-    {
-        playerScore = 0;
-        SceneManager.LoadScene("GameManager");
     }
 }
