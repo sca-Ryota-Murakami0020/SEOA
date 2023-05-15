@@ -32,7 +32,7 @@ public class PlayerPalmate : MonoBehaviour
     {
         if(Input.touchCount == 1 && touch.phase == TouchPhase.Began)
         {
-            //Ray ray =Camera.main.ScreenPointToRay()
+            Ray ray =Camera.main.ScreenPointToRay()
         }
     }
 
