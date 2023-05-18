@@ -30,15 +30,29 @@ public class PlayerPalmate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.touchCount == 1 && touch.phase == TouchPhase.Began)
+        if(Input.GetMouseButtonDown(1))//Input.touchCount == 1 && touch.phase == TouchPhase.Began
         {
-            Ray ray =Camera.main.ScreenPointToRay()
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin,(Vector2)ray.direction,100);
+            if(hit2d.collider.CompareTag("Cow"))
+            {
+
+            }
         }
     }
 
     public void CanNotSwaip()
     {
         doSwaip = false;
+    }
 
+    public void GetCow()
+    {
+        score += 100;
+    }
+
+    public void GetMouse()
+    {
+        score += 30;
     }
 }
