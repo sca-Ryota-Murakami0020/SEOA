@@ -63,7 +63,6 @@ public class PlayerPalmate : MonoBehaviour
     public void GetCow()
     {
         score += 100;
-        Debug.Log("‘æˆêŠÖ–å");
         sm.UpdateScore(score);
     }
 

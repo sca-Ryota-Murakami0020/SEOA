@@ -36,26 +36,22 @@ public class scoreManager : MonoBehaviour
     //スコア表示の更新
     public void UpdateScore(int score)
     {
-        Debug.Log("第二関門");
         int count = 10;
-        for(int imagecount = 0;count < imageNumber.Length;imagecount++)
+        for(int imageCount = 0;imageCount < imageNumber.Length;imageCount++)
         {
-            Debug.Log("処理中");
             //１の位の計算
-            if(imagecount == 0)
+            if(imageCount == 0)
             {
-                imageNumber[imagecount].sprite = numberImage[score % count];
-                Debug.Log("1 スコア更新完了");
+                imageNumber[imageCount].sprite = numberImage[score % count];
             }
             //１０以上の位の計算
             else
             {
-                imageNumber[imagecount].sprite = numberImage[score / count];
-                Debug.Log(count + " スコア更新完了");
+                imageNumber[imageCount].sprite = numberImage[score / count];
+                Debug.Log(imageCount);
             }
             count *= 10;
         }
-        Debug.Log(score);
     }
 
     //コンマの表示
