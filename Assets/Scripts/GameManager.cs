@@ -12,9 +12,11 @@ public class GameManager : MonoBehaviour
     private int[] ratHighScoreIndex;
     //プレイヤーが出したスコア
     private int playerScore;
+    //プレイするのがネズミモードかの判定
+    private bool playMouse;
     //scoreManager
     private scoreManager sm;
-    //
+    //PlayerPalmate
     private PlayerPalmate pp;
     
     //プロパティ
@@ -22,6 +24,11 @@ public class GameManager : MonoBehaviour
     {
         get { return this.playerScore;}
         set { this.playerScore = value;}
+    }
+    public bool Mouse
+    {
+        get { return this.playMouse;}
+        set { this.playMouse = value;}
     }
     //シングルトン
     private void Awake()
@@ -33,8 +40,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         //参照
-        sm = GetComponent<scoreManager>();
-        pp = GetComponent<PlayerPalmate>();
+        pp = GameObject.Find("Player").GetComponent<PlayerPalmate>();
 
         //要素数の定義
         cowHighScoreIndex = new int[5];

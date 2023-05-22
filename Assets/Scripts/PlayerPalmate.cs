@@ -14,6 +14,10 @@ public class PlayerPalmate : MonoBehaviour
     private int score;
     //
     private Touch touch;
+    //GameManager
+    private GameManager gm;
+    //scoreManager
+    private scoreManager sm;
 
     //プロパティ
     public int Score {
@@ -24,21 +28,28 @@ public class PlayerPalmate : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        sm = GameObject.Find("Scorecounter").GetComponent<scoreManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(1))//Input.touchCount == 1 && touch.phase == TouchPhase.Began
+        if(Input.GetMouseButtonDown(0))//Input.touchCount == 1 && touch.phase == TouchPhase.Began
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin,(Vector2)ray.direction,100);
-            if(hit2d && hit2d.collider.tag == "牛")
+            //if(Physics2D.Raycast(ray,out hit2d,))
+            if(hit2d.collider && hit2d.collider.tag == "animal")
             {
-                //角度と距離の計算
-                GetCow();
-                Debug.Log("いったん");
+                if(gm.Mouse)
+                {
+                    GetMouse();
+                }
+                if(!gm.Mouse)
+                {
+                    GetCow();
+                }
                 Destroy(hit2d.collider.gameObject);
             }
         }
@@ -52,10 +63,13 @@ public class PlayerPalmate : MonoBehaviour
     public void GetCow()
     {
         score += 100;
+        Debug.Log("第一関門");
+        sm.UpdateScore(score);
     }
 
     public void GetMouse()
     {
         score += 30;
+        sm.UpdateScore(score);
     }
 }

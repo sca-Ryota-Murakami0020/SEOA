@@ -5,8 +5,6 @@ using UnityEngine.UI;
 
 public class scoreManager : MonoBehaviour
 {
-    //GamaManager
-    private GameManager gm;
     //PlayerPalmate
     private PlayerPalmate pp;
     //数字の画像
@@ -20,8 +18,7 @@ public class scoreManager : MonoBehaviour
     void Start()
     {
         //参照
-        gm = GetComponent<GameManager>();
-        pp = GetComponent<PlayerPalmate>();
+        pp = GameObject.Find("Player").GetComponent<PlayerPalmate>();
 
         //数値の初期化
         for(int count = 0; count < imageNumber.Length; count++)
@@ -36,28 +33,38 @@ public class scoreManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    //スコア表示の更新
+    public void UpdateScore(int score)
     {
-        
-    }
-
-    public void UpdateScore()
-    {
-        int count = imageNumber.Length;
-        for(int imageCount = 10000000;imageCount >= 1;imageCount /= 10)
+        Debug.Log("第二関門");
+        int count = 10;
+        for(int imagecount = 0;count < imageNumber.Length;imagecount++)
         {
-            imageNumber[count].sprite = numberImage[gm.PlayerScore % imageCount];
-            count--;
+            Debug.Log("処理中");
+            //１の位の計算
+            if(imagecount == 0)
+            {
+                imageNumber[imagecount].sprite = numberImage[score % count];
+                Debug.Log("1 スコア更新完了");
+            }
+            //１０以上の位の計算
+            else
+            {
+                imageNumber[imagecount].sprite = numberImage[score / count];
+                Debug.Log(count + " スコア更新完了");
+            }
+            count *= 10;
         }
+        Debug.Log(score);
     }
 
+    //コンマの表示
     public void ShowComma()
     {
         int commaCount = 0;
         for(int checkScore = 1000000;checkScore >= 1000;checkScore /= 1000)
         {
-            if (gm.PlayerScore / checkScore >= 1)
+            if (pp.Score / checkScore >= 1)
             {
                 commaImage[commaCount].enabled = true;
                 commaCount++;

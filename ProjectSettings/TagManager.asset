@@ -4,11 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - "\u725B"
-  - "\u30CD\u30BA\u30DF"
-  - "\u8ECA"
-  - "\u30AB\u30EC\u30FC"
-  - "\u30E9\u30E0\u9152"
+  - car
+  - curry
+  - rum
+  - animal
+  - player
   layers:
   - Default
   - TransparentFX
