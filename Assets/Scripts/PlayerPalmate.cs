@@ -34,9 +34,12 @@ public class PlayerPalmate : MonoBehaviour
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin,(Vector2)ray.direction,100);
-            if(hit2d.collider.CompareTag("Cow"))
+            if(hit2d && hit2d.collider.tag == "ãç")
             {
-
+                //äpìxÇ∆ãóó£ÇÃåvéZ
+                GetCow();
+                Debug.Log("Ç¢Ç¡ÇΩÇÒ");
+                Destroy(hit2d.collider.gameObject);
             }
         }
     }

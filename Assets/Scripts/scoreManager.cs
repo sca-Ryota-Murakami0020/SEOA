@@ -24,9 +24,9 @@ public class scoreManager : MonoBehaviour
         pp = GetComponent<PlayerPalmate>();
 
         //数値の初期化
-        for(int count = 0; count <= imageNumber.Length; count++)
+        for(int count = 0; count < imageNumber.Length; count++)
         { 
-            imageNumber[count].sprite = numberImage[0]  ;  
+            imageNumber[count].sprite = numberImage[0];
         }
 
         //コンマ表示の初期化

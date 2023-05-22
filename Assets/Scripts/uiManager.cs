@@ -6,61 +6,61 @@ using UnityEngine.SceneManagement;
 
 public class uiManager : MonoBehaviour
 {
-    //
+    //GameManager
     private GameManager gm;
-    //
+    //表示するUI
+    //今回はボタンの操作をuiManagerに任せるためにSetActiveによる
+    //表示の操作とする。
     [SerializeField] private GameObject pauseUI;
-    //
-    private GameObject pauseUIInstance;
-    //
+    //ポーズ中のフラグ
     private bool doPause;
 
-    //
+    //プロパティ
     public bool DoPause
     {
         get { return this.doPause;}
         set { this.doPause = value;}
     }
-    // Start is called before the first frame update
+
     void Start()
     {
-        gm = GetComponent<GameManager>();
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         //
         doPause = false;
+        //UI表示の初期化
+        pauseUI.SetActive(false);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //ポーズUIの表示
     public void OpenPauseUI()
     {
-        if(pauseUIInstance == null && doPause == false)
+        if(doPause == false)
         {
-            pauseUIInstance = GameObject.Instantiate(pauseUI) as GameObject;
+            pauseUI.SetActive(true);
             Time.timeScale = 0F;
             doPause = true;
         }
     }
 
+    //ゲーム再開
     public void BackGame()
     {
         doPause = false;
-        Destroy(pauseUI);
+        pauseUI.SetActive(false);
         Time.timeScale = 1.0f;
     }
 
+    //タイトルへ
     public void GoTitle()
     {
         gm.PlayerScore = 0;
-        SceneManager.LoadScene("TitleScene");
+        SceneManager.LoadScene("TITLE");
     }
 
+    //リトライ
     public void LoadGame()
     {
         gm.PlayerScore = 0;
-        SceneManager.LoadScene("GameManager");
+        SceneManager.LoadScene("GameScene");
     }
 }
