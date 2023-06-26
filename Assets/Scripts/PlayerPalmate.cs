@@ -1,28 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class PlayerPalmate : MonoBehaviour
 {
     //スワイプ中かの判定
-    private bool doSwaip;
+    //private bool doSwaip;
     //カレーを取得し、バフを受けている様態
     private bool doPoworUp;
     //ラム酒を取得し、デバフを受けている状態
     private bool doPoworDwon;
     //1ゲーム中の獲得スコア
-    private int score;
+    private int _score;
     //
-    private Touch touch;
+    //private Touch touch;
     //GameManager
     private GameManager gm;
     //scoreManager
     private scoreManager sm;
+    //効果音関係
+    //牛の鳴き声
+    [SerializeField] private AudioClip cowSE;
+    //ネズミの鳴き声
+    [SerializeField] private AudioClip mouseSE;
+    //タッチ音
+    [SerializeField] private AudioClip touchSE;
 
     //プロパティ
     public int Score {
-        get { return this.score; }
-        set { this.score = value; }
+        get { return this._score; }
+        set { this._score = value; }
     }
 
     // Start is called before the first frame update
@@ -42,14 +50,8 @@ public class PlayerPalmate : MonoBehaviour
             //if(Physics2D.Raycast(ray,out hit2d,))
             if(hit2d.collider && hit2d.collider.tag == "animal")
             {
-                if(gm.Mouse)
-                {
-                    GetMouse();
-                }
-                if(!gm.Mouse)
-                {
-                    GetCow();
-                }
+                AnimalController animalController = GetComponent<AnimalController>();
+                int score = animalController.Score;
                 Destroy(hit2d.collider.gameObject);
             }
         }
@@ -57,18 +59,10 @@ public class PlayerPalmate : MonoBehaviour
 
     public void CanNotSwaip()
     {
-        doSwaip = false;
+        //doSwaip = false;
     }
-
-    public void GetCow()
+    void GetAnimal(int score)
     {
-        score += 100;
-        sm.UpdateScore(score);
-    }
-
-    public void GetMouse()
-    {
-        score += 30;
-        sm.UpdateScore(score);
+        _score += score;
     }
 }
