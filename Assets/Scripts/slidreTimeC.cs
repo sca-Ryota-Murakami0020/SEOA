@@ -33,7 +33,7 @@ public class slidreTimeC : MonoBehaviour
         slidTime -= Time.deltaTime;
         if(slidTime <= 0.0f)
         {
-            pl.CanNotSwaip();
+            //pl.CanNotSwaip();
         }
     }
 

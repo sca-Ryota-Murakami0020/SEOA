@@ -7,8 +7,8 @@ TagManager:
   - car
   - curry
   - rum
-  - animal
   - player
+  - animal
   layers:
   - Default
   - TransparentFX

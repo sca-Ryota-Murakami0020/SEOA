@@ -62,11 +62,17 @@ public class GameManager : MonoBehaviour
         playerScore = pp.Score;
         for(int count = 4; count >= 0; count--)
         {
-            if(playerScore >= cowHighScoreIndex[count])
+            if(playerScore > cowHighScoreIndex[count])
             {
                 int temp = cowHighScoreIndex[count + 1];
                 cowHighScoreIndex[count + 1] = cowHighScoreIndex[count];
                 cowHighScoreIndex[count] = playerScore;
+            }
+            //ランキングと同じスコアを出した場合、既存の順位の下のスコアを更新する
+            if(playerScore == cowHighScoreIndex[count])
+            {
+                cowHighScoreIndex[count + 1] = playerScore;
+                break;
             }
         }
     }

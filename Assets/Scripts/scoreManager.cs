@@ -24,47 +24,60 @@ public class scoreManager : MonoBehaviour
         for(int count = 0; count < imageNumber.Length; count++)
         { 
             imageNumber[count].sprite = numberImage[0];
+            //スコアを初期表示(0,000)にする
+            if(count < 3)imageNumber[count].enabled = true;
+            if(count >= 4) imageNumber[count].enabled = false;
         }
 
         //コンマ表示の初期化
-        for(int count = 0;count < commaImage.Length;count++)
-        {
-            commaImage[count].enabled = false;
-        }
+        commaImage[1].enabled = false;
     }
 
     //スコア表示の更新
     public void UpdateScore(int score)
     {
+        Debug.Log(score);
+        //各桁の計算をおこなうために使う変数
         int count = 10;
+        //１桁目から計算をおこなう
         for(int imageCount = 0;imageCount < imageNumber.Length;imageCount++)
         {
             //１の位の計算
-            if(imageCount == 0)
+            if(imageCount <= 0)
             {
-                imageNumber[imageCount].sprite = numberImage[score % count];
+                //仮に計算結果が9を超えているor0を下回っている場合0にする値
+                int showScore = score / count;
+                if(showScore < 0　|| showScore > imageNumber.Length)showScore =0;
+                imageNumber[imageCount].sprite = numberImage[showScore];
+                Debug.Log("１の桁：" + showScore);
             }
             //１０以上の位の計算
-            else
+            if(imageCount >= 1)
             {
-                imageNumber[imageCount].sprite = numberImage[score / count];
-                Debug.Log(imageCount);
+                //仮に計算結果が9を超えているor0を下回っている場合0にする値
+                int showScore = score / count;
+                if (showScore < 0 || showScore > imageNumber.Length) showScore = 0;
+                imageNumber[imageCount].sprite = numberImage[showScore];
+                Debug.Log(count + "の桁：" + showScore);
+                count *= 10;
             }
-            count *= 10;
+            //ここで計算する桁が増加するのでcountも増加させる
+            
         }
     }
 
-    //コンマの表示
-    public void ShowComma()
+    //表示するスコアの桁数・コンマの表示を更新
+    public void ShowScore(int score)
     {
-        int commaCount = 0;
-        for(int checkScore = 1000000;checkScore >= 1000;checkScore /= 1000)
+        //獲得スコアに応じて表示するスコアの桁数を更新する
+        int showScoreNumber = score / 10;
+        if(showScoreNumber >= 4)
         {
-            if (pp.Score / checkScore >= 1)
+            if(showScoreNumber >= 6 && commaImage[1].enabled == false)
             {
-                commaImage[commaCount].enabled = true;
-                commaCount++;
+                commaImage[1].enabled = true;
             }
+            imageNumber[showScoreNumber].enabled = true;
         }
     }
 }
