@@ -17,13 +17,15 @@ public class PlayerPalmate : MonoBehaviour
 
     #region//変数
     //スワイプ中かの判定
-    //private bool doSwaip;
+    private bool doSwaip;
     //カレーを取得し、バフを受けている様態
     private bool doPoworUp;
     //ラム酒を取得し、デバフを受けている状態
     private bool doPoworDwon;
     //ポーズ中orゲーム開始３カウント前の操作できない状態
     private bool doStop;
+    //獲得した動物の名前
+    private string animalName;
     //1ゲーム中の獲得スコア
     private int _score;
     //ゲーム時間(画像で数字の表示をおこなうため、整数型の方が実装しやすいから)
@@ -32,8 +34,14 @@ public class PlayerPalmate : MonoBehaviour
     private int spriteCount;
     //細かい時間経過をおこなうために用いる小数型の変数
     private float countTime;
-    //獲得した動物の名前
-    private string animalName;
+    //スワイプできる残りの距離
+    private float swaipRange = 5.0f;
+    //1フレーム前のスワイプの位置
+    private Vector2 oldFlameTouchPos;
+    //現在のスワイプ位置
+    private Vector2 nowTouchPos;
+    //現在つなげる始点になっている動物の位置
+    private Vector2 oldTouchPos;
     #endregion
 
     #region//効果音関係
@@ -86,8 +94,8 @@ public class PlayerPalmate : MonoBehaviour
             CountTime();
             //BGMを流す関数
             PlayBGM();
-            //タッチ処理
-            if (Input.GetMouseButtonDown(0))//Input.touchCount == 1 && touch.phase == TouchPhase.Began
+            //スワイプ操作
+            if(Input.GetMouseButtonDown(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
@@ -99,15 +107,68 @@ public class PlayerPalmate : MonoBehaviour
                 }
                 //タッチしたオブジェクトが動物なら
                 if (hit2d.collider && hit2d.collider.tag == "animal")
-                { 
-                    AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
-                    int score = animalController.Score;
-                    animalName = hit2d.collider.name;
-                    GetAnimal(score,animalName);
-                    Destroy(hit2d.collider.gameObject);
+                {
+                    oldTouchPos = hit2d.collider.transform.position;
+                    doSwaip = false;
+                }
+            }
+
+            if(Input.GetMouseButton(0) && doSwaip == true)
+            {
+                //1フレーム前のマウスの位置を保持
+                oldFlameTouchPos = nowTouchPos;
+                //現在のスワイプ位置の更新
+                nowTouchPos = Input.mousePosition;
+                //ここで移動距離の計算を行う
+                NowVectorPosition(nowTouchPos);
+                float maveCount = nowTouchPos - oldFlameTouchPos;
+                swaipRange -= 
+
+                //始点の更新
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
+                //何もないところをタップしたら
+                if (hit2d.collider == null)
+                {
+                    return;
+                }
+                if (hit2d.collider && hit2d.collider.tag == "animal")
+                {
+                    //ここでスワイプ先に動物がいたときに、触れた動物を次の始点に変更する
+                    oldTouchPos = hit2d.collider.transform.position;
+                }
+            }
+
+            //タッチ処理
+            if (Input.GetMouseButton(0))//Input.touchCount == 1 && touch.phase == TouchPhase.Began
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
+                //if(Physics2D.Raycast(ray,out hit2d,))
+                //何もないところをタップしたら
+                if (hit2d.collider == null)
+                {
+                    return;
+                }
+                //タッチしたオブジェクトが動物なら
+                if (hit2d.collider && hit2d.collider.tag == "animal")
+                {
+                    if(Input.GetMouseButtonUp(0) && doSwaip == false)
+                    {
+                        AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
+                        int score = animalController.Score;
+                        animalName = hit2d.collider.name;
+                        GetAnimal(score, animalName);
+                        Destroy(hit2d.collider.gameObject);
+                    }
                 }
             }
         }
+    }
+
+    private float NowVectorPosition(Vector2 vec)
+    {
+        
     }
 
     private void CountTime()
