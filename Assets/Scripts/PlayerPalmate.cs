@@ -120,7 +120,7 @@ public class PlayerPalmate : MonoBehaviour
                 //現在のスワイプ位置の更新
                 nowTouchPos = Input.mousePosition;
                 //ここで移動距離の計算を行う
-                NowVectorPosition(nowTouchPos);
+                //NowVectorPosition(nowTouchPos);
                 //float maveCount = nowTouchPos - oldFlameTouchPos;
                 //swaipRange -= ;
 
