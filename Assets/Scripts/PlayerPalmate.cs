@@ -121,8 +121,8 @@ public class PlayerPalmate : MonoBehaviour
                 nowTouchPos = Input.mousePosition;
                 //ここで移動距離の計算を行う
                 NowVectorPosition(nowTouchPos);
-                float maveCount = nowTouchPos - oldFlameTouchPos;
-                swaipRange -= 
+                //float maveCount = nowTouchPos - oldFlameTouchPos;
+                //swaipRange -= ;
 
                 //始点の更新
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -166,10 +166,10 @@ public class PlayerPalmate : MonoBehaviour
         }
     }
 
-    private float NowVectorPosition(Vector2 vec)
-    {
+    //private float NowVectorPosition(Vector2 vec)
+    //{
         
-    }
+    //}
 
     private void CountTime()
     {
