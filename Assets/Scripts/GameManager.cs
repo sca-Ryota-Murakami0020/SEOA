@@ -12,12 +12,10 @@ public class GameManager : MonoBehaviour
     private int[] ratHighScoreIndex;
     //プレイヤーが出したスコア
     private int playerScore;
-    //プレイするのがネズミモードかの判定
-    private bool playMouse;
+    ///ラム酒ガードを買っている場合
+    private bool guardRam;
     //scoreManager
     private scoreManager sm;
-    //PlayerPalmate
-    private PlayerPalmate pp;
     
     //プロパティ
     public int PlayerScore
@@ -25,11 +23,12 @@ public class GameManager : MonoBehaviour
         get { return this.playerScore;}
         set { this.playerScore = value;}
     }
-    public bool Mouse
+    public bool GuardRam
     {
-        get { return this.playMouse;}
-        set { this.playMouse = value;}
+        get { return this.guardRam;}
+        set { this.guardRam = value;}
     }
+
     //シングルトン
     private void Awake()
     {
@@ -39,9 +38,6 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //参照
-        pp = GameObject.Find("Player").GetComponent<PlayerPalmate>();
-
         //要素数の定義
         cowHighScoreIndex = new int[5];
         ratHighScoreIndex = new int[5];
@@ -57,9 +53,9 @@ public class GameManager : MonoBehaviour
         playerScore = 0;
     }
     
-    public void UpdateRanking()
+    public void UpdateRanking(int score)
     {
-        playerScore = pp.Score;
+        playerScore = score;
         for(int count = 4; count >= 0; count--)
         {
             if(playerScore > cowHighScoreIndex[count])
