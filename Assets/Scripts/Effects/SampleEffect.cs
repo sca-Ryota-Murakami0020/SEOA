@@ -39,7 +39,7 @@ public class SampleEffect : MonoBehaviour
         // 次のエフェクト再生する準備
         effectCurrent++;
         //エフェクトの呼び出しが一通り終わったらカウントを0にする
-        if (effects.Length == effectCurrent) effectCurrent = 0;
+        if (effectCurrent == effects.Length) effectCurrent = 0;
     }
 
     private IEnumerator ActiveEffect()

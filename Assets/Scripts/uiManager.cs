@@ -63,4 +63,5 @@ public class uiManager : MonoBehaviour
         gm.PlayerScore = 0;
         SceneManager.LoadScene("GameScene");
     }
+
 }

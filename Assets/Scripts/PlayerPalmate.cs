@@ -15,6 +15,8 @@ public class PlayerPalmate : MonoBehaviour
     private AudioSource audios = null;
     //AnimalManager
     [SerializeField]private AnimalManager am;
+    //エフェクト
+    [Header("呼び出すエフェクト")] [SerializeField] private effectsC[] effect;
     #endregion
 
     #region//変数
@@ -28,8 +30,8 @@ public class PlayerPalmate : MonoBehaviour
     private bool doStop;
     //獲得した動物の名前
     private string animalName;
-    //スワイプ中につなげた動物の数
-    private int connectCount;
+    //エフェクトを呼び出した回数
+    private int effectCount;
     //1ゲーム中の獲得スコア
     private int _score;
     //ゲーム時間(画像で数字の表示をおこなうため、整数型の方が実装しやすいから)
@@ -50,8 +52,6 @@ public class PlayerPalmate : MonoBehaviour
     [Header("表示する数字のImage")] [SerializeField] private Sprite[] numberImage;
     //数字の配置位置
     [Header("表示するImageの配置位置")] [SerializeField] private Image[] imageNumber;
-    //エフェクト
-    [Header("呼び出すエフェクト")][SerializeField]private Animation effect;
     private Touch touch;
     #endregion
 
@@ -100,7 +100,7 @@ public class PlayerPalmate : MonoBehaviour
         _score = 0;
         gameTime = 60;
         countTime = 0.0f;
-        connectCount = 0;
+        effectCount = 0;
         doStop = true;
         doPoworUp = false;
         doPoworDwon = false;
@@ -117,77 +117,7 @@ public class PlayerPalmate : MonoBehaviour
             CountTime();
             //BGMを流す関数
             PlayBGM();
-            //スワイプ操作
-            /*
-            if(Input.GetMouseButtonDown(0))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
-                //if(Physics2D.Raycast(ray,out hit2d,))
-                //何もないところをタップしたら
-                if (hit2d.collider == null)
-                {
-                    return;
-                }
-                //タッチしたオブジェクトが動物なら
-                if (hit2d.collider && hit2d.collider.tag == "animal")
-                {
-                    //Debug.Log("Hit");
-                    oldTouchPos = hit2d.collider.transform.position;
-                    doSwaip = false;
-                }
-            }
-
-            if(Input.GetMouseButton(0) && doSwaip == true)
-            {
-                //1フレーム前のマウスの位置を保持
-                oldFlameTouchPos = nowTouchPos;
-                //現在のスワイプ位置の更新
-                nowTouchPos = Input.mousePosition;
-                //ここで移動距離の計算を行う
-                //NowVectorPosition(nowTouchPos);
-                //float maveCount = nowTouchPos - oldFlameTouchPos;
-                //swaipRange -= ;
-
-                //始点の更新
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
-                //何もないところをタップしたら
-                if (hit2d.collider == null)
-                {
-                    return;
-                }
-                if (hit2d.collider && hit2d.collider.tag == "animal")
-                {
-                    //ここでスワイプ先に動物がいたときに、触れた動物を次の始点に変更する
-                    oldTouchPos = hit2d.collider.transform.position;
-                }
-            }
-
-            //タッチ処理
-            if (Input.GetMouseButton(0))//Input.touchCount == 1 && touch.phase == TouchPhase.Began
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
-                //if(Physics2D.Raycast(ray,out hit2d,))
-                //何もないところをタップしたら
-                if (hit2d.collider == null)
-                {
-                    return;
-                }
-                //タッチしたオブジェクトが動物なら
-                if (hit2d.collider && hit2d.collider.tag == "animal")
-                {
-                    if(Input.GetMouseButtonUp(0) && doSwaip == false)
-                    {
-                        AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
-                        int score = animalController.Score;
-                        animalName = hit2d.collider.name;
-                        GetAnimal(score, animalName);
-                        Destroy(hit2d.collider.gameObject);
-                    }
-                }
-            }*/
+            //操作
             if(Input.GetMouseButton(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -201,34 +131,38 @@ public class PlayerPalmate : MonoBehaviour
                 {
                     //記憶する名前の更新
                     string localName = hit2d.collider.name;
-                    if(animalName != null && animalName != localName)
+                    //animalNameに格納されている名前が無い場合またはanimalNameの名前とlocalNameが異なる場合
+                    if(animalName == null)// || animalName != localName)
                     {
                         animalName = localName;
                     }
-                    //要素の末端に追加する
-                    animalInfo.Enqueue(hit2d.collider.gameObject);
-                    //つなげた動物の数を増やす
-                    connectCount++;
-                }
-
-                if (Input.GetMouseButtonUp(0))
-                {
-                    //スコアを格納したスクリプトをここで参照する
-                    AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
-                    int score = animalController.Score;
-                    animalName = hit2d.collider.name;
-                    //GetAnimal(score, animalName);
-                    //Destroy(hit2d.collider.gameObject);
-                    StartCoroutine(ActiveEffect(score,animalName));
-                }
+                    //もしつなげようとしている動物が一番最初の動物と同じ場合
+                    if(hit2d.collider.name == animalName)
+                    {
+                        //要素の末端に追加する
+                        animalInfo.Enqueue(hit2d.collider.gameObject);
+                    }
+                    ////名前が異なる場合
+                    //if (hit2d.collider.name != animalName)
+                    //{
+                    //    return;
+                    //}
+                    
+                }               
+            }
+            //マウスを離したor指を離した場合
+            if (Input.GetMouseButtonUp(0))
+            {
+                //スコアを格納したスクリプトをここで参照する
+                AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
+                int score = animalController.Score;
+                //animalName = hit2d.collider.name;
+                StartCoroutine(ActiveEffect(score, animalName));
             }
         }
+        //Debug.Log($"connectCount:{effectCount}");
     }
 
-    //private float NowVectorPosition(Vector2 vec)
-    //{
-        
-    //}
 
     //時間計測
     private void CountTime()
@@ -272,7 +206,6 @@ public class PlayerPalmate : MonoBehaviour
         if(name == "Cow") PlayBGM(cowSE);
         if(name == "Mouse") PlayBGM(mouseSE);
         sm.UpdateScore(_score);
-        //Debug.Log("Get");
     }
 
     //BGMや効果音を呼び出す関数
@@ -282,23 +215,32 @@ public class PlayerPalmate : MonoBehaviour
             audios.PlayOneShot(clip);
     }
 
-    private void Effect()
+    private void Effect(GameObject animal)
     {
-        //GameObject effect = new GameObject;
-        //ここで座標を代入できる。そして最初の要素が削除さえる。要素
-        //effect.transform.position = animalInfo.Dequeue().transform.position;
+        //動物の位置にエフェクトを呼び出す
+        effect[effectCount].PlayEffect(animal);
+        //つなげた数を増やす
+        effectCount++;
+        Debug.Log(animalInfo.Count);
+        //要素の削除
+        am.SponeAnimal(animalInfo.Dequeue());
+        Debug.Log("処理完了");
+        //ここで出力する個数が配列以上になったら0に戻し終了させる
+        if (effect.Length == effectCount) effectCount = 0;
     }
 
     private IEnumerator ActiveEffect(int score, string name)
     {
+        //エフェクトを呼び出すオブジェクトの数が0になるまで行う
         while(animalInfo.Count != 0)
         {
             //エフェクト再生
-            yield return null;
+            Effect(animalInfo.Peek());         
             //スコア加算
             GetAnimal(score,name);
-            //要素の削除
-            am.SponeAnimal(animalInfo.Dequeue());
         }
+        //記憶する名前の初期化
+        animalName = null;
+        yield return null;
     }
 }
