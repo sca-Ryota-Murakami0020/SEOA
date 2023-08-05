@@ -298,7 +298,7 @@ public class PlayerPalmate : MonoBehaviour
             //スコア加算
             GetAnimal(score,name);
             //要素の削除
-
+            am.SponeAnimal(animalInfo.Dequeue());
         }
     }
 }
