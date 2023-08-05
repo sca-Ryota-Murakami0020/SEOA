@@ -51,7 +51,9 @@ public class PlayerParamate : MonoBehaviour
     //数字の配置位置
     [Header("表示するImageの配置位置")][SerializeField] private Image[] imageNumber;
     //エフェクト
-    [Header("呼び出すエフェクト")][SerializeField] private Animation effect;
+    [Header("呼び出すエフェクト")][SerializeField] private PlayEffect[] effects;
+    //現在のエフェクト
+    private int effectCurrent = 0;
     private Touch touch;
     #endregion
 
@@ -283,11 +285,13 @@ public class PlayerParamate : MonoBehaviour
             audios.PlayOneShot(clip);
     }
 
-    private void Effect()
+    private void Effect(Vector2 pos)
     {
-        //GameObject effect = new GameObject;
-        //ここで座標を代入できる。そして最初の要素が削除さえる。要素
-        //effect.transform.position = animalInfo.Dequeue().transform.position;
+        // エフェクト再生する(座標)
+        effects[effectCurrent].Play(pos);
+        // 次のエフェクト再生する準備
+        effectCurrent++;
+        if (effects.Length == effectCurrent) effectCurrent = 0;
     }
 
     private IEnumerator ActiveEffect(int score, string name)
@@ -295,8 +299,8 @@ public class PlayerParamate : MonoBehaviour
         while (animalInfo.Count != 0)
         {
             //エフェクト再生
-
-            yield return null;
+            Effect(animalInfo.Dequeue().transform.position);
+            yield return new WaitForSeconds(0.1f);
             //スコア加算
             GetAnimal(score, name);
             //要素の削除
