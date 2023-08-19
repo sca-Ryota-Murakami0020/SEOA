@@ -17,15 +17,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4133458394834801126, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.38661098
+      value: 2.97
       objectReference: {fileID: 0}
     - target: {fileID: 4133458394834801126, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.9803772
+      value: 1.85
       objectReference: {fileID: 0}
     - target: {fileID: 4133458394834801126, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -3.2995389
       objectReference: {fileID: 0}
     - target: {fileID: 4133458394834801126, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -79,4 +79,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   score: 100
-  speed: 0
+  speed: 0.001
+  name: Cow

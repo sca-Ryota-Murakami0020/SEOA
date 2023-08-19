@@ -49,7 +49,7 @@ public class scoreManager : MonoBehaviour
                 int showScore = score / count;
                 if(showScore < 0@|| showScore > imageNumber.Length)showScore =0;
                 imageNumber[imageCount].sprite = numberImage[showScore];
-                Debug.Log("‚P‚ÌŒ…F" + showScore);
+                //Debug.Log("‚P‚ÌŒ…F" + showScore);
             }
             //‚P‚OˆÈã‚ÌˆÊ‚ÌŒvZ
             if(imageCount >= 1)
@@ -58,7 +58,7 @@ public class scoreManager : MonoBehaviour
                 int showScore = score / count;
                 if (showScore < 0 || showScore > imageNumber.Length) showScore = 0;
                 imageNumber[imageCount].sprite = numberImage[showScore];
-                Debug.Log(count + "‚ÌŒ…F" + showScore);
+                //Debug.Log(count + "‚ÌŒ…F" + showScore);
                 count *= 10;
             }
             //‚±‚±‚ÅŒvZ‚·‚éŒ…‚ª‘‰Á‚·‚é‚Ì‚Åcount‚à‘‰Á‚³‚¹‚é
