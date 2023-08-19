@@ -7,6 +7,8 @@ public class AnimalController : MonoBehaviour
     [SerializeField] int score;
     [SerializeField] float speed;
     [SerializeField] string name;
+    //[SerializeField] PlayerPalmate pp;
+
     public int Score {
         get {return  this.score;}
     }
@@ -17,6 +19,7 @@ public class AnimalController : MonoBehaviour
 
     private void Update()
     {
+        //if(!pp.DoStop)
         this.transform.position += this.transform.up * speed;
     }
 }

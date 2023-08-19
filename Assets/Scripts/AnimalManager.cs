@@ -101,10 +101,20 @@ public class AnimalManager : MonoBehaviour
             //動物が格納されていない場所を全探索する
             //if (sponerObject[count] == null)          
             //出現する位置と進行方向を与える
+            if (nextPos < sponerObject.Length)
+            {
+                nextPos++;
+            }
+            if (nextPos >= sponerObject.Length)
+            {
+                nextPos = 0;
+            }
+            
+
             GameObject sponeAnimal = getAnimals.Dequeue();           
             sponeAnimal.transform.position = sponerObject[nextPos].transform.position;
             sponeAnimal.transform.rotation = sponerObject[nextPos].transform.rotation;
-            nextPos++;
+                      
             animals.Enqueue(sponeAnimal);
             //待機時間を設定
             int waitTime = Random.Range(minWaitTime, maxWaitTime);

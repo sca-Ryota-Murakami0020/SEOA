@@ -144,7 +144,7 @@ public class PlayerPalmate : MonoBehaviour
         countTime = 0.0f;
         effectCount = 0;
         chainCount = 0;
-        doStop = false;
+        doStop = true;
         doPoworUp = false;
         doPoworDwon = false;
         animalName = null;
@@ -329,9 +329,10 @@ public class PlayerPalmate : MonoBehaviour
     {
         for(int count = 3; count >= 0; count--)
         {
-
+            Debug.Log(count);
             yield return new WaitForSeconds(1);
         }
+        doStop = false;
     }
 
     public void StartCountDownAnim()
