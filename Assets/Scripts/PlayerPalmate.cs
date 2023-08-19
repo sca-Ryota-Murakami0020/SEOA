@@ -16,7 +16,14 @@ public class PlayerPalmate : MonoBehaviour
     //AnimalManager
     [SerializeField]private AnimalManager am;
     //エフェクト
-    [Header("呼び出すエフェクト")] [SerializeField] private effectsC[] effect;
+    [Header("呼び出すエフェクト")] [SerializeField]
+    private effectsC[] effect;
+    //カウントダウン演出用アニメーション
+    [Header("カウントダウンアニメーション")][SerializeField]
+    private Animation countDwonAnim;
+    //feberC
+    [Header("フィーバー演出関係を管理するスクリプト")][SerializeField]
+    private feberC fc;
     #endregion
 
     #region//変数
@@ -28,12 +35,18 @@ public class PlayerPalmate : MonoBehaviour
     private bool doPoworDwon;
     //ポーズ中orゲーム開始３カウント前の操作できない状態
     private bool doStop;
+    //カレーを取得した場合
+    private bool getCurry;
+    //ラム酒を取得した場合
+    private bool getRum;
     //獲得した動物の名前
     private string animalName;
     //エフェクトを呼び出した回数
     private int effectCount;
     //1ゲーム中の獲得スコア
     private int _score;
+    //獲得予定のスコア
+    private int getScore;
     //ゲーム時間(画像で数字の表示をおこなうため、整数型の方が実装しやすいから)
     private int gameTime;
     //表示する画像の番地数を格納する変数
@@ -46,12 +59,15 @@ public class PlayerPalmate : MonoBehaviour
     private Vector2 nowTouchPos;
     //現在つなげる始点になっている動物の位置
     private Vector2 oldTouchPos;
-    //捕まえた動物の情報
+    //捕まえた動物の場所（動物は常に動くのでオブジェクトで格納する方が正確な位置にエフェクトを呼び出せる）
     private Queue<GameObject> animalInfo;
     //数字のイメージ
-    [Header("表示する数字のImage")] [SerializeField] private Sprite[] numberImage;
+    [Header("表示する数字のImage")] [SerializeField] 
+    private Sprite[] numberImage;
     //数字の配置位置
-    [Header("表示するImageの配置位置")] [SerializeField] private Image[] imageNumber;
+    [Header("表示するImageの配置位置")] [SerializeField] 
+    private Image[] imageNumber;
+    //タッチ関数
     private Touch touch;
     #endregion
 
@@ -88,20 +104,31 @@ public class PlayerPalmate : MonoBehaviour
         set { this._score = value; }
     }
 
+    public int ChainCount
+    {
+        get { return this.effectCount;}
+        set { this.effectCount = value;}
+    }
+
+    public bool DoStop
+    {
+        get { return this.doStop;}
+        set { this.doStop = value;}
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         sm = GameObject.Find("Scorecounter").GetComponent<scoreManager>();
         audios = GetComponent<AudioSource>();
-        am = GetComponent<AnimalManager>();
 
         //初期化
         _score = 0;
         gameTime = 60;
         countTime = 0.0f;
         effectCount = 0;
-        doStop = true;
+        doStop = false;
         doPoworUp = false;
         doPoworDwon = false;
         animalName = null;
@@ -111,14 +138,20 @@ public class PlayerPalmate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(doStop == true)
+        if(doStop)
+        {
+            StartCoroutine(StartCountDown());
+        }
+
+        if(!doStop)
         {
             //時間計測
             CountTime();
             //BGMを流す関数
             PlayBGM();
+            Debug.Log(animalName);
             //操作
-            if(Input.GetMouseButton(0))
+            if (Input.GetMouseButton(0))
             {
                 Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
@@ -139,30 +172,39 @@ public class PlayerPalmate : MonoBehaviour
                     //もしつなげようとしている動物が一番最初の動物と同じ場合
                     if(hit2d.collider.name == animalName)
                     {
+                        AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
+                        int localScore = animalController.Score;
                         //要素の末端に追加する
                         animalInfo.Enqueue(hit2d.collider.gameObject);
+                        getScore = localScore;
                     }
-                    ////名前が異なる場合
-                    //if (hit2d.collider.name != animalName)
-                    //{
-                    //    return;
-                    //}
                     
-                }               
+                }      
+                //カレーを取得した場合
+                if(hit2d.collider.tag == "Curry")
+                {
+                    getCurry = true;
+                }
+                //ラム酒を取得した場合
+                if(hit2d.collider.tag == "Rum")
+                {
+                    getRum = true;
+                }
             }
             //マウスを離したor指を離した場合
             if (Input.GetMouseButtonUp(0))
             {
                 //スコアを格納したスクリプトをここで参照する
-                AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
-                int score = animalController.Score;
+                //AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
+                //int score = animalController.Score;
                 //animalName = hit2d.collider.name;
-                StartCoroutine(ActiveEffect(score, animalName));
+                //if(getCurry) DoPowerUp();
+                //if(getRum) DoPowerDown();
+                StartCoroutine(ActiveEffect());
             }
         }
         //Debug.Log($"connectCount:{effectCount}");
     }
-
 
     //時間計測
     private void CountTime()
@@ -182,6 +224,10 @@ public class PlayerPalmate : MonoBehaviour
                 gm.UpdateRanking(_score);
             }
         }
+        //if(doPoworUp)
+        //{
+
+        //}
     }
 
     //BGMプレイ
@@ -200,6 +246,11 @@ public class PlayerPalmate : MonoBehaviour
     //スコア処理
     void GetAnimal(int score,string name)
     {
+        //フィーバー中のスコア計算
+        if(doPoworUp) _score += (int)(score + score * 0.5);
+        //デバフ付与中のスコア計算
+        if(doPoworDwon) _score += (int)(score - score * 0.3);
+        //通常のスコア加算
         _score += score;
         PlayBGM(touchSE);
         //動物に応じて呼び出す鳴き声を変更する
@@ -229,15 +280,45 @@ public class PlayerPalmate : MonoBehaviour
         if (effect.Length == effectCount) effectCount = 0;
     }
 
-    private IEnumerator ActiveEffect(int score, string name)
+    private void DoPowerUp()
+    {
+        doPoworUp = true;
+        fc.StartFeber();
+    }
+
+    private void DoPowerDown()
+    {
+        doPoworDwon = false;
+    }
+
+    private IEnumerator StartCountDown()
+    {
+        for(int count = 3; count >= 0; count--)
+        {
+
+            yield return new WaitForSeconds(1);
+        }
+    }
+
+    public void StartCountDownAnim()
+    {
+
+    }
+
+    public void ReturnGame()
+    {
+        doStop = false;
+    }
+
+    private IEnumerator ActiveEffect()
     {
         //エフェクトを呼び出すオブジェクトの数が0になるまで行う
         while(animalInfo.Count != 0)
         {
             //エフェクト再生
-            Effect(animalInfo.Peek());         
+            Effect(animalInfo.Peek());
             //スコア加算
-            GetAnimal(score,name);
+            GetAnimal(getScore,animalName);
         }
         //記憶する名前の初期化
         animalName = null;
