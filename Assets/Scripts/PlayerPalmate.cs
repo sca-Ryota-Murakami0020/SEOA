@@ -169,52 +169,7 @@ public class PlayerPalmate : MonoBehaviour
             //操作
             if (Input.GetMouseButton(0))
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
-                //何もないところをタップorスワイプ中なら
-                if(hit2d.collider == null)
-                {
-                    return;
-                }
-                if(hit2d.collider.tag == "animal")
-                {
-                    AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
-                    //記憶する名前の更新
-                    string localName = animalController.Name;
-                    //animalNameに格納されている名前が無い場合またはanimalNameの名前とlocalNameが異なる場合
-                    if(animalName == null)// || animalName != localName)
-                    {
-                        animalName = localName;
-                    }
-                    //もしつなげようとしている動物が一番最初の動物と同じ場合
-                    if(hit2d.collider.name == animalName && canAnimal)
-                    {
-                        PlayBGM(touchSE);
-                        
-                        getScore = animalController.Score;
-                        //要素の末端に追加する
-                        animalInfo.Enqueue(hit2d.collider.gameObject);
-                        //am.GetAnimals.Enqueue(hit2d.collider.gameObject);
-                        //getScore = localScore;
-                        //つなげている数を記憶
-                        chainCount += 1;
-                        //Debug.Log(chainCount);
-                        StartCoroutine(DerayTime());
-                    }
-                    
-                }      
-                //カレーを取得した場合
-                if(hit2d.collider.tag == "Curry")
-                {
-                    PlayBGM(touchSE);
-                    getCurry = true;
-                }
-                //ラム酒を取得した場合
-                if(hit2d.collider.tag == "Rum")
-                {
-                    PlayBGM(touchSE);
-                    getRum = true;
-                }
+                TryCatchingAnimals();
             }
             //マウスを離したor指を離した場合
             if (Input.GetMouseButtonUp(0))
@@ -229,6 +184,60 @@ public class PlayerPalmate : MonoBehaviour
             }
         }
         //Debug.Log($"connectCount:{effectCount}");
+    }
+
+    private void TryCatchingAnimals()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
+        //何もないところをタップorスワイプ中なら
+        if (hit2d.collider == null)
+        {
+            return;
+        }
+        if (hit2d.collider.tag == "animal")
+        {
+            AnimalController animalController = 
+            //記憶する名前の更新
+            string localName = animalController.Name;
+            //animalNameに格納されている名前が無い場合またはanimalNameの名前とlocalNameが異なる場合
+            if (animalName == null)// || animalName != localName)
+            {
+                animalName = localName;
+            }
+
+            //同じ動物に当たってしまっていたら以降の処理はしない
+            if(!animalController.CanGet) return;
+
+            //もしつなげようとしている動物が一番最初の動物と同じ場合
+            if (hit2d.collider.name == animalName && canAnimal)
+            {
+                PlayBGM(touchSE);
+
+                getScore = animalController.Score;
+                //要素の末端に追加する
+                animalInfo.Enqueue(hit2d.collider.gameObject);
+                //am.GetAnimals.Enqueue(hit2d.collider.gameObject);
+                //getScore = localScore;
+                //つなげている数を記憶
+                chainCount += 1;
+                //Debug.Log(chainCount);
+                StartCoroutine(DerayTime());
+            }
+
+        }
+        //カレーを取得した場合
+        if (hit2d.collider.tag == "Curry")
+        {
+            PlayBGM(touchSE);
+            getCurry = true;
+        }
+        //ラム酒を取得した場合
+        if (hit2d.collider.tag == "Rum")
+        {
+            PlayBGM(touchSE);
+            getRum = true;
+        }
     }
 
     //時間計測
@@ -348,7 +357,9 @@ public class PlayerPalmate : MonoBehaviour
     private IEnumerator ActiveEffect()
     {
         //スコア加算
+        Debug.Log("chainCount" + chainCount);
         GetAnimal(getScore, chainCount);
+        
         //エフェクトを呼び出すオブジェクトの数が0になるまで行う
         while (animalInfo.Count != 0)
         {

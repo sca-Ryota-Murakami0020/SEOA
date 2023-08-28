@@ -111,9 +111,11 @@ public class AnimalManager : MonoBehaviour
             }
             
 
-            GameObject sponeAnimal = getAnimals.Dequeue();           
+            GameObject sponeAnimal = getAnimals.Dequeue(); 
+            //AnimalController ac = GameObject.Find(sponeAnimal).GetComponent<AnimalController>();
             sponeAnimal.transform.position = sponerObject[nextPos].transform.position;
             sponeAnimal.transform.rotation = sponerObject[nextPos].transform.rotation;
+            
                       
             animals.Enqueue(sponeAnimal);
             //ë“ã@éûä‘Çê›íË

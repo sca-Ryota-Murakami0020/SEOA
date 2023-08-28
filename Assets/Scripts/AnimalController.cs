@@ -7,14 +7,23 @@ public class AnimalController : MonoBehaviour
     [SerializeField] int score;
     [SerializeField] float speed;
     [SerializeField] string name;
+    bool canGet = true;
     //[SerializeField] PlayerPalmate pp;
 
-    public int Score {
+    public int Score
+    {
         get {return  this.score;}
     }
+
     public string Name
     {
         get { return this.name;}
+    }
+
+    public bool CanGet
+    {
+        get { return this.canGet;}
+        set { this.canGet = value;}
     }
 
     private void Update()
