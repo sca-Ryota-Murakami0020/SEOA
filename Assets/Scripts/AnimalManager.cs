@@ -4,17 +4,9 @@ using UnityEngine;
 
 public class AnimalManager : MonoBehaviour
 {
-    [Header("呼び出すオブジェクト")][SerializeField]
-    private GameObject[] sponerObject;
-    //格納している動物達
-    private Queue<GameObject> animals;
-    //プレイヤーがゲットした動物
-    private Queue<GameObject> getAnimals;
-    //牛のオブジェクト
-    [Header("牛")][SerializeField]
-    private GameObject cow;
-    [Header("ネズミ")][SerializeField]
-    private GameObject mouse;
+    #region//変数関係
+    //前回のスポナーの番号
+    private int oldSponerNumber;
     //最大待機時間
     [Header("最大待機時間")][SerializeField] 
     private int maxWaitTime;
@@ -23,13 +15,26 @@ public class AnimalManager : MonoBehaviour
     private int minWaitTime;
     //次のスポーン位置
     private int nextPos;
+    #endregion
 
-    //[SerializeField] private PlayerPalmate pp;
+    #region//リスト関係
+    [Header("呼び出すオブジェクト")]
+    [SerializeField]
+    private GameObject[] sponerObject;    
+    //格納する動物達
+    [SerializeField]
+    private GameObject[] animals;
+    //格納している動物達
+    private Queue<GameObject> animalIndex;
+    //プレイヤーがゲットした動物
+    private Queue<GameObject> getAnimals;
+    #endregion
 
+    //プロパティ
     public Queue<GameObject> Animals
     {
-        get { return this.animals;}
-        set { this.animals = value;}
+        get { return this.animalIndex;}
+        set { this.animalIndex = value;}
     }
 
     public Queue<GameObject> GetAnimals
@@ -43,20 +48,13 @@ public class AnimalManager : MonoBehaviour
     {
         //初期化
         //sponerObject = new GameObject[10];
-        animals = new Queue<GameObject>();
+        animalIndex = new Queue<GameObject>();
         getAnimals = new Queue<GameObject>();
         nextPos = 0;
-        //動物を格納
-        for(int count = 0; count < 30; count++)
+        oldSponerNumber = 0;
+        for(int count = 0; count <= animals.Length; count++)
         {
-            if(count == 0 ||count % 2 == 0)
-            {
-                animals.Enqueue(mouse);
-            }
-            else
-            {
-                animals.Enqueue(cow);
-            }
+            animalIndex.Enqueue(animals[count]);
         }
     }
 
@@ -72,7 +70,7 @@ public class AnimalManager : MonoBehaviour
         for (int count = 0; count < sponerObject.Length; count++)
         {
             //出現する位置と進行方向を与える
-            GameObject sponeAnimal = animals.Dequeue();
+            GameObject sponeAnimal = animalIndex.Dequeue();
             sponeAnimal.transform.position = sponerObject[count].transform.position;
             sponeAnimal.transform.rotation = sponerObject[count].transform.rotation;
         }
@@ -82,6 +80,9 @@ public class AnimalManager : MonoBehaviour
     public void SponeAnimal(GameObject animal)
     {
         getAnimals.Enqueue(animal);
+        AnimalController an = animal.gameObject.GetComponent<AnimalController>();
+        an.CanGet = false;
+        an.StopAnimal();
         StartCoroutine(SponeAnimalActive());
     }
 
@@ -98,29 +99,32 @@ public class AnimalManager : MonoBehaviour
         //設置処理
         for (int count = 0; count < getAnimals.Count; count++)
         {
-            //動物が格納されていない場所を全探索する
-            //if (sponerObject[count] == null)          
-            //出現する位置と進行方向を与える
-            if (nextPos < sponerObject.Length)
+            //ここで次の場所が決まるまで処理を行う
+            while(true)
             {
-                nextPos++;
-            }
-            if (nextPos >= sponerObject.Length)
-            {
-                nextPos = 0;
-            }
-            
+                int selectNumber = Random.Range(0, sponerObject.Length);
 
-            GameObject sponeAnimal = getAnimals.Dequeue(); 
-            //AnimalController ac = GameObject.Find(sponeAnimal).GetComponent<AnimalController>();
-            sponeAnimal.transform.position = sponerObject[nextPos].transform.position;
-            sponeAnimal.transform.rotation = sponerObject[nextPos].transform.rotation;
-            
+                if (oldSponerNumber != selectNumber)
+                {
+                    oldSponerNumber = selectNumber;
+                    break;
+                }
+            }
+            //リストの末端に獲得した動物を入れる
+            GameObject setAnimal = getAnimals.Dequeue();
+            animalIndex.Enqueue(setAnimal);
+
+            //ここで次の出現する位置と進行方向を与え、スポナーに呼び出す動物を設置する
+            GameObject sponeAnimal = animalIndex.Dequeue(); //ここは元々getAnimalsにしていたが、よく考えてみたらanimalsにしないと正しく参照する訳がないので修正した
+            AnimalController ac = sponeAnimal.GetComponent<AnimalController>();
+            sponeAnimal.transform.position = sponerObject[oldSponerNumber].transform.position;
+            sponeAnimal.transform.rotation = sponerObject[oldSponerNumber].transform.rotation;           
                       
-            animals.Enqueue(sponeAnimal);
             //待機時間を設定
             int waitTime = Random.Range(minWaitTime, maxWaitTime);
             yield return new WaitForSeconds(waitTime);
+            //ここで動物が動くようにする
+            ac.ResetPar();
         }
     }
 

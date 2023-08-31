@@ -47,48 +47,66 @@ public class PlayerPalmate : MonoBehaviour
     private int effectCount;
     //1ゲーム中の獲得スコア
     private int _score;
-    //獲得予定のスコア
-    private int getScore;
     //つなげた数
     private int chainCount;
     //ゲーム時間(画像で数字の表示をおこなうため、整数型の方が実装しやすいから)
     private int gameTime;
     //表示する画像の番地数を格納する変数
     private int spriteCount;
-    //確保間隔時間
-    [SerializeField] private float waitTime;
     //細かい時間経過をおこなうために用いる小数型の変数
     private float countTime;
-    //エフェクト出現間隔時間
-    [SerializeField] private float waitEffectTime;
+    /*
     //1フレーム前のスワイプの位置
     private Vector2 oldFlameTouchPos;
     //現在のスワイプ位置
     private Vector2 nowTouchPos;
     //現在つなげる始点になっている動物の位置
     private Vector2 oldTouchPos;
+    */
     //捕まえた動物の場所（動物は常に動くのでオブジェクトで格納する方が正確な位置にエフェクトを呼び出せる）
     private Queue<GameObject> animalInfo;
-    //数字のイメージ
-    [Header("表示する数字のImage")] [SerializeField] 
-    private Sprite[] numberImage;
-    //数字の配置位置
-    [Header("表示するImageの配置位置")] [SerializeField] 
-    private Image[] imageNumber;
+    
     //タッチ関数
     private Touch touch;
     #endregion
 
-    #region//状態クラス
+    #region//インスペクターで変更する値
+    //確保間隔時間
+    [SerializeField] private float waitTime;
+    //牛のスコア
+    [SerializeField] private int cowScore;
+    //ネズミのスコア
+    [SerializeField] private int mouseScore;
+    //エフェクト出現間隔時間
+    [SerializeField] private float waitEffectTime;
+    //数字のイメージ
+    [Header("表示する数字のImage")]
+    [SerializeField]
+    private Sprite[] numberImage;
+    //数字の配置位置
+    [Header("表示するImageの配置位置")]
+    [SerializeField]
+    private Image[] imageNumber;
+    #endregion
+
+    #region//クラス
     //プレイヤーの状態
     private enum PlayerState
     {
         NULL,
-        NORMAL,
         POWERUP,
         POWERDOWM
     };
+
+    private enum GetAnimals
+    {
+        NULL,
+        Cow,
+        Mouse
+    };
+    //変数
     private PlayerState playerState;
+    private GetAnimals getAnimalName;
     #endregion
 
     #region//効果音関係
@@ -106,7 +124,7 @@ public class PlayerPalmate : MonoBehaviour
     [SerializeField] private AudioClip lastBGM;
     #endregion
 
-    //プロパティ
+    #region//プロパティ
     public int Score {
         get { return this._score; }
         set { this._score = value; }
@@ -129,7 +147,7 @@ public class PlayerPalmate : MonoBehaviour
         get { return this.animalInfo;}
         set { this.animalInfo = value;}
     }
-
+    #endregion
 
     // Start is called before the first frame update
     void Start()
@@ -144,11 +162,15 @@ public class PlayerPalmate : MonoBehaviour
         countTime = 0.0f;
         effectCount = 0;
         chainCount = 0;
+
         doStop = true;
         doPoworUp = false;
         doPoworDwon = false;
-        animalName = null;
         canAnimal = true;
+
+        animalName = null;
+        playerState = PlayerState.NULL;
+        getAnimalName = GetAnimals.NULL;
         animalInfo = new Queue<GameObject>();
     }
 
@@ -175,15 +197,11 @@ public class PlayerPalmate : MonoBehaviour
             if (Input.GetMouseButtonUp(0))
             {
                 //スコアを格納したスクリプトをここで参照する
-                //AnimalController animalController = GameObject.FindWithTag("animal").GetComponent<AnimalController>();
-                //int score = animalController.Score;
-                //animalName = hit2d.collider.name;
                 //if(getCurry) DoPowerUp();
                 //if(getRum) DoPowerDown();
                 StartCoroutine(ActiveEffect());
             }
         }
-        //Debug.Log($"connectCount:{effectCount}");
     }
 
     private void TryCatchingAnimals()
@@ -195,48 +213,66 @@ public class PlayerPalmate : MonoBehaviour
         {
             return;
         }
+        
         if (hit2d.collider.tag == "animal")
-        {
-            AnimalController animalController = 
-            //記憶する名前の更新
-            string localName = animalController.Name;
-            //animalNameに格納されている名前が無い場合またはanimalNameの名前とlocalNameが異なる場合
-            if (animalName == null)// || animalName != localName)
+        {          
+            //レイヤーマスクを獲得する
+            string getAnimalName = LayerMask.LayerToName(hit2d.collider.gameObject.layer);
+            //もし保持している名前が無かったら
+            if(this.getAnimalName == GetAnimals.NULL)
             {
-                animalName = localName;
+                //最初のデータを牛に変更
+                if(getAnimalName == LayerMask.LayerToName(6))
+                {
+                    this.getAnimalName = GetAnimals.Cow;
+                }
+                //最初のデータをネズミに変更
+                if(getAnimalName == LayerMask.LayerToName(7))
+                {
+                    this.getAnimalName = GetAnimals.Mouse;
+                }
+                //つなげている数を更新
+                chainCount += 1;
             }
 
-            //同じ動物に当たってしまっていたら以降の処理はしない
-            if(!animalController.CanGet) return;
+            if (this.getAnimalName != GetAnimals.NULL && this.getAnimalName.ToString() == getAnimalName)
+            {
+                //捕まえた動物の関数を取得する
+                AnimalController animalController = hit2d.collider.gameObject.GetComponent<AnimalController>();
+                //同じ動物に当たってしまっていたら以降の処理はしない
+                if (!animalController.CanGet) return;
 
-            //もしつなげようとしている動物が一番最初の動物と同じ場合
-            if (hit2d.collider.name == animalName && canAnimal)
+                //もしつなげようとしている動物が一番最初の動物と同じ場合
+                if (animalController.CanGet)
+                {
+                    PlayBGM(touchSE);
+                    //要素の末端に追加する
+                    animalInfo.Enqueue(hit2d.collider.gameObject);
+                    //捕まえた動物の捕まえたフラグをfalseにする
+                    animalController.CanGet = false;
+                    //つなげている数を更新
+                    chainCount += 1;
+                    StartCoroutine(DerayTime());
+                }
+            }
+        }
+
+        if(hit2d.collider.tag == "Item")
+        {
+            //レイヤーマスクを獲得する
+            string getItemName = LayerMask.LayerToName(hit2d.collider.gameObject.layer);
+            //ラム酒を取得した場合
+            if (getItemName == LayerMask.LayerToName(8))
             {
                 PlayBGM(touchSE);
-
-                getScore = animalController.Score;
-                //要素の末端に追加する
-                animalInfo.Enqueue(hit2d.collider.gameObject);
-                //am.GetAnimals.Enqueue(hit2d.collider.gameObject);
-                //getScore = localScore;
-                //つなげている数を記憶
-                chainCount += 1;
-                //Debug.Log(chainCount);
-                StartCoroutine(DerayTime());
+                getRum = true;
             }
-
-        }
-        //カレーを取得した場合
-        if (hit2d.collider.tag == "Curry")
-        {
-            PlayBGM(touchSE);
-            getCurry = true;
-        }
-        //ラム酒を取得した場合
-        if (hit2d.collider.tag == "Rum")
-        {
-            PlayBGM(touchSE);
-            getRum = true;
+            //カレーを取得した場合
+            if (getItemName == LayerMask.LayerToName(9))
+            {
+                PlayBGM(touchSE);
+                getCurry = true;
+            }           
         }
     }
 
@@ -277,8 +313,8 @@ public class PlayerPalmate : MonoBehaviour
         }
     }
 
-    //スコア処理
-    void GetAnimal(int score, int count)
+    //牛のスコア処理
+    void GetCow(int count)
     {
         //フィーバー中のスコア計算
         //if(doPoworUp) _score += (int)(score + score * 0.5);
@@ -289,14 +325,34 @@ public class PlayerPalmate : MonoBehaviour
         //タップで終わらせている時
         if(count == 1)
         {
-            _score += score;
+            _score += cowScore;
         }
         //つなげている状態
         if(count >= 2)
         {
-            _score += score * count + (int)((score * count) * 0.1);
+            _score += cowScore * count + (int)((cowScore * count) * 0.1);
         }
         
+        sm.UpdateScore(_score);
+        //チェイン数を初期化
+        chainCount = 0;
+    }
+
+    //ネズミのスコア加算
+    void GetMouse(int count)
+    {
+        //通常のスコア加算
+        //タップで終わらせている時
+        if (count == 1)
+        {
+            _score += mouseScore;
+        }
+        //つなげている状態
+        if (count >= 2)
+        {
+            _score += mouseScore * count + (int)((mouseScore * count) * 0.1);
+        }
+
         sm.UpdateScore(_score);
         //チェイン数を初期化
         chainCount = 0;
@@ -326,7 +382,6 @@ public class PlayerPalmate : MonoBehaviour
     private void DoPowerUp()
     {
         doPoworUp = true;
-        //fc.StartFeber();
     }
 
     private void DoPowerDown()
@@ -358,7 +413,14 @@ public class PlayerPalmate : MonoBehaviour
     {
         //スコア加算
         Debug.Log("chainCount" + chainCount);
-        GetAnimal(getScore, chainCount);
+        if(getAnimalName == GetAnimals.Cow)
+        {
+            GetCow(chainCount);
+        }
+        if(getAnimalName == GetAnimals.Mouse)
+        {
+            GetMouse(chainCount);
+        }
         
         //エフェクトを呼び出すオブジェクトの数が0になるまで行う
         while (animalInfo.Count != 0)
@@ -372,6 +434,7 @@ public class PlayerPalmate : MonoBehaviour
         }
         //記憶する名前の初期化
         animalName = null;
+        getAnimalName = GetAnimals.NULL;
         yield return null;
     }
 

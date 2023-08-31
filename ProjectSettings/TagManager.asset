@@ -5,21 +5,20 @@ TagManager:
   serializedVersion: 2
   tags:
   - car
-  - curry
-  - rum
   - player
   - animal
+  - item
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Car
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Cow
+  - Mouse
+  - Rum
+  - Curry
   - 
   - 
   - 

@@ -59,6 +59,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cow
       objectReference: {fileID: 0}
+    - target: {fileID: 4695470606661386446, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
 --- !u!1 &4087177790137902821 stripped
@@ -78,6 +82,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938815285cdac3e4782bbad48bb8c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: []
   score: 100
+  id: 0
   speed: 0.001
   name: Cow

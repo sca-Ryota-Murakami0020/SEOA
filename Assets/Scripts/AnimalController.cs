@@ -4,21 +4,22 @@ using UnityEngine;
 
 public class AnimalController : MonoBehaviour
 {
-    [SerializeField] int score;
-    [SerializeField] float speed;
-    [SerializeField] string name;
-    bool canGet = true;
-    //[SerializeField] PlayerPalmate pp;
+    //動物のスピード
+    [SerializeField] private float speed;
+    //チェイン中の動物の動き
+    [SerializeField] private float slowSpeed;
+    //捕まえた判定
+    private bool canGet = true;
 
-    public int Score
+    public enum DoMove
     {
-        get {return  this.score;}
-    }
+        NULL,
+        OK,
+        NOT,
+        SLOW
+    };
 
-    public string Name
-    {
-        get { return this.name;}
-    }
+    DoMove canMove = DoMove.OK;
 
     public bool CanGet
     {
@@ -26,9 +27,45 @@ public class AnimalController : MonoBehaviour
         set { this.canGet = value;}
     }
 
+    public DoMove Move
+    {
+        get { return this.canMove;}
+        set { this.canMove = value;}
+    }
+
     private void Update()
     {
-        //if(!pp.DoStop)
-        this.transform.position += this.transform.up * speed;
+        if(canMove == DoMove.OK)
+        {
+            //スワイプ中の動物の動き
+            if(canMove == DoMove.SLOW)
+            {
+                this.transform.position += this.transform.up * slowSpeed;
+            }
+            //その他の時の動き
+            if(canMove != DoMove.SLOW)
+            {
+                this.transform.position += this.transform.up * speed;
+            }
+            
+        }
+    }
+
+    public void ResetPositionAnimal(int count)
+    {
+
+    }
+
+    //スポナーに設置されている動物を動かすために各パラメーターを初期化する
+    public void ResetPar()
+    {
+        canMove = DoMove.OK;
+        canGet = true;
+    }
+
+    //行動停止時にする処理
+    public void StopAnimal()
+    {
+        canMove = DoMove.NOT;
     }
 }

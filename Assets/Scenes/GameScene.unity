@@ -668,6 +668,8 @@ MonoBehaviour:
   - {fileID: 5524807188901641661}
   - {fileID: 5524807189004747629}
   waitTime: 0.2
+  cowScore: 0
+  mouseScore: 0
   waitEffectTime: 0.5
   numberImage:
   - {fileID: 21300000, guid: b3beb35e91f477b46a7adbb66696a6a1, type: 3}
@@ -1397,6 +1399,10 @@ PrefabInstance:
     - target: {fileID: 4087177790137902821, guid: de09e2df1e4056a4f91fe1aa066295eb, type: 3}
       propertyPath: m_Name
       value: Cow
+      objectReference: {fileID: 0}
+    - target: {fileID: 4087177790137902821, guid: de09e2df1e4056a4f91fe1aa066295eb, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 4669605725098620877, guid: de09e2df1e4056a4f91fe1aa066295eb, type: 3}
       propertyPath: m_RootOrder
