@@ -36,7 +36,7 @@ public class scoreManager : MonoBehaviour
     //スコア表示の更新
     public void UpdateScore(int score)
     {
-        Debug.Log(score);
+        //Debug.Log(score);
         //各桁の計算をおこなうために使う変数
         int count = 10;
         //１桁目から計算をおこなう
@@ -59,6 +59,10 @@ public class scoreManager : MonoBehaviour
                 if (showScore < 0 || showScore > imageNumber.Length) showScore = 0;
                 imageNumber[imageCount].sprite = numberImage[showScore];
                 //Debug.Log(count + "の桁：" + showScore);
+                if(imageCount >= 4)
+                {
+                    imageNumber[imageCount].enabled = true;
+                }
                 count *= 10;
             }
             //ここで計算する桁が増加するのでcountも増加させる

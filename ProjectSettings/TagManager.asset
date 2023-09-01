@@ -12,7 +12,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Car
+  - AlreadyGet
   - Water
   - UI
   - Cow

@@ -1,15 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Spine;
+using Spine.Unity;
 
 public class AnimalController : MonoBehaviour
 {
     //動物のスピード
-    [SerializeField] private float speed;
+    [SerializeField] private float normalSpeed;
+    //ラム酒を取得している時のスピード
+    [SerializeField] private float powerdownSpeed;
     //チェイン中の動物の動き
     [SerializeField] private float slowSpeed;
     //捕まえた判定
-    private bool canGet = true;
+    private bool canGet = false;
+    //出現が許可された動物かを判定するフラグ
+    private bool selectFag = false;
+    //映っているかのフラグ
+    private bool renderFlag = false;
+    //PlayerPlamate
+    [SerializeField] private PlayerPalmate pp;
+    //AnimalManager
+    [SerializeField] private AnimalManager am;
+    //SkeletonAnimation
+    [SerializeField] private SkeletonAnimation sa;
+    //タッチしたときに発光する色
+    [SerializeField] private Color changeColor;
+    //元の色
+    [SerializeField] private Color normalColor;
+    //
+    [SerializeField] private Renderer animalRenderer;
 
     public enum DoMove
     {
@@ -19,12 +39,24 @@ public class AnimalController : MonoBehaviour
         SLOW
     };
 
-    DoMove canMove = DoMove.OK;
+    DoMove canMove = DoMove.NULL;
 
     public bool CanGet
     {
         get { return this.canGet;}
         set { this.canGet = value;}
+    }
+
+    public bool SelectFlag
+    {
+        get { return this.selectFag;}
+        set { this.selectFag = value;}
+    }
+
+    public bool RenderFlag
+    {
+        get { return this.renderFlag;}
+        set { this.renderFlag = value;}
     }
 
     public DoMove Move
@@ -35,37 +67,148 @@ public class AnimalController : MonoBehaviour
 
     private void Update()
     {
-        if(canMove == DoMove.OK)
+        CheckMove();   
+        //Debug.Log(pp.DoChain);
+        /*
+        if(animalRenderer.isVisible)
         {
-            //スワイプ中の動物の動き
-            if(canMove == DoMove.SLOW)
-            {
-                this.transform.position += this.transform.up * slowSpeed;
-            }
-            //その他の時の動き
-            if(canMove != DoMove.SLOW)
-            {
-                this.transform.position += this.transform.up * speed;
-            }
-            
+            renderFlag = true;
+        }*/
+    }
+
+    //状態管理
+    private void CheckMove()
+    {
+        //出現が許可されているオブジェクトであるなら
+        if(this.selectFag)
+        {
+            //状況判断関数
+            CheckGame();   
+            //Debug.Log(renderFlag);
+        }       
+    }
+
+    //ゲームの状態に応じた処理を行う関数
+    private void CheckGame()
+    {
+        //ゲーム開始時点またはフィーバー演出中なら
+        if (pp.DontStart && pp.OpenMenu)
+        {
+            StopAnimal();
+        }
+
+        //プレイヤーがスワイプ中なら
+        if (pp.DoChain)
+        {
+            this.canMove = DoMove.SLOW;
+        }
+
+        //プレイヤーが繋げていない状態であり、自身がゲーム内に出ることが許可されている個体なら
+        if(!pp.DoChain && this.selectFag)
+        {
+            this.canMove = DoMove.OK;
+        }
+
+        //捕まっている状態なら
+        if(!this.canGet)
+        {
+            ChangeColor();
+        }
+
+        //上記の状態以外の状態なら
+        if (canMove == DoMove.OK)
+        {
+            MoveAnimal();
+        }
+
+        if(this.animalRenderer.isVisible)
+        {
+            this.renderFlag = true;
+        }
+
+        if(!this.animalRenderer.isVisible)
+        {
+            this.renderFlag = false;
+            Debug.Log("映ってないよ");
+        }
+
+        //もし捕まらずに画面外に出た場合
+        if(!renderFlag && this.selectFag)
+        {
+            am.ReturnAnimal(this.gameObject);
         }
     }
 
-    public void ResetPositionAnimal(int count)
+    //挙動
+    private void MoveAnimal()
     {
+        //ローカル変数
+        float localSpeed = 0.0f;
+      
+        //プレイヤーがラム酒を取った場合
+        if (pp.PlayerSituation == PlayerPalmate.PlayerState.POWERDOWN)
+        {
+            localSpeed = this.powerdownSpeed;
+            //スワイプ中の動物の動き
+            if (canMove == DoMove.SLOW)
+            {
+                localSpeed *= this.slowSpeed;
+            }
+        }
+        //ニュートラルな動き
+        if (this.canMove != DoMove.SLOW && pp.PlayerSituation == PlayerPalmate.PlayerState.NULL)
+        {
+            localSpeed = this.normalSpeed;
+            //スワイプ中の動物の動き
+            if (canMove == DoMove.SLOW)
+            {
+                localSpeed *= this.slowSpeed;
+            }
+        }
 
+        //ここで移動処理を行う
+        this.transform.position += this.transform.up * localSpeed;
     }
 
     //スポナーに設置されている動物を動かすために各パラメーターを初期化する
     public void ResetPar()
     {
-        canMove = DoMove.OK;
-        canGet = true;
+        this.canMove = DoMove.OK;
+        this.canGet = true;
+        this.sa.skeleton.SetColor(normalColor);
     }
 
     //行動停止時にする処理
     public void StopAnimal()
     {
-        canMove = DoMove.NOT;
+        this.canMove = DoMove.NOT;
+        this.canGet = false;
+        this.selectFag = false;
+    }
+
+    //ここはgetFlagのみをfalseにしたい時に使う関数
+    public void CanselGet() => this.canGet = false;
+
+    //確保された際にオブジェクトのカラーを変更する
+    public void ChangeColor() => sa.skeleton.SetColor(changeColor);
+
+    //見えている時
+    private void OnBecameVisible()
+    {
+        
+    }
+
+    //見えていない時
+    private void OnBecameInvisible()
+    {
+        
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("Car"))
+        {
+            am.ReturnAnimal(this.gameObject);
+        }
     }
 }

@@ -18,6 +18,7 @@ public class PlayerPalmate : MonoBehaviour
     //エフェクト
     [Header("呼び出すエフェクト")] [SerializeField]
     private effectsC[] effect;
+    
     //カウントダウン演出用アニメーション
     //[Header("カウントダウンアニメーション")][SerializeField]
     //private Animation countDwonAnim;
@@ -33,8 +34,10 @@ public class PlayerPalmate : MonoBehaviour
     private bool doPoworUp;
     //ラム酒を取得し、デバフを受けている状態
     private bool doPoworDwon;
-    //ポーズ中orゲーム開始３カウント前の操作できない状態
-    private bool doStop;
+    //ゲーム開始３カウント前の操作できない状態
+    private bool dontStart;
+    //メニューを開いている状態
+    private bool openMenu;
     //カレーを取得した場合
     private bool getCurry;
     //ラム酒を取得した場合
@@ -79,6 +82,10 @@ public class PlayerPalmate : MonoBehaviour
     [SerializeField] private int mouseScore;
     //エフェクト出現間隔時間
     [SerializeField] private float waitEffectTime;
+    //パワーアップ時間
+    [SerializeField] private float powerupTime;
+    //パワーダウン時間
+    [SerializeField] private float powerdownTime;
     //数字のイメージ
     [Header("表示する数字のImage")]
     [SerializeField]
@@ -91,11 +98,11 @@ public class PlayerPalmate : MonoBehaviour
 
     #region//クラス
     //プレイヤーの状態
-    private enum PlayerState
+    public enum PlayerState
     {
         NULL,
         POWERUP,
-        POWERDOWM
+        POWERDOWN
     };
 
     private enum GetAnimals
@@ -104,6 +111,7 @@ public class PlayerPalmate : MonoBehaviour
         Cow,
         Mouse
     };
+
     //変数
     private PlayerState playerState;
     private GetAnimals getAnimalName;
@@ -136,10 +144,26 @@ public class PlayerPalmate : MonoBehaviour
         set { this.effectCount = value;}
     }
 
-    public bool DoStop
+    public bool DontStart
     {
-        get { return this.doStop;}
-        set { this.doStop = value;}
+        get { return this.dontStart;}
+        set { this.dontStart = value;}
+    }
+
+    public bool OpenMenu
+    {
+        get { return this.openMenu;}
+        set { this.openMenu = value;}
+    }
+
+    public bool DoChain
+    {
+        get { return this.doSwaip;}
+    }
+
+    public PlayerState PlayerSituation
+    {
+        get { return this.playerState;}
     }
 
     public Queue<GameObject> Animals
@@ -163,10 +187,11 @@ public class PlayerPalmate : MonoBehaviour
         effectCount = 0;
         chainCount = 0;
 
-        doStop = true;
+        dontStart = true;
         doPoworUp = false;
         doPoworDwon = false;
         canAnimal = true;
+        openMenu = false;
 
         animalName = null;
         playerState = PlayerState.NULL;
@@ -177,12 +202,13 @@ public class PlayerPalmate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(doStop)
-        {
+        if(dontStart)
+        {            
             StartCoroutine(StartCountDown());
+            dontStart = false;
         }
 
-        if(!doStop)
+        if((!dontStart) && (!openMenu))
         {
             //時間計測
             CountTime();
@@ -204,8 +230,10 @@ public class PlayerPalmate : MonoBehaviour
         }
     }
 
+    //スワイプ処理
     private void TryCatchingAnimals()
     {
+        
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
         //何もないところをタップorスワイプ中なら
@@ -215,14 +243,15 @@ public class PlayerPalmate : MonoBehaviour
         }
         
         if (hit2d.collider.tag == "animal")
-        {          
+        {
+            doSwaip = true;
             //レイヤーマスクを獲得する
             string getAnimalName = LayerMask.LayerToName(hit2d.collider.gameObject.layer);
             //もし保持している名前が無かったら
             if(this.getAnimalName == GetAnimals.NULL)
             {
                 //最初のデータを牛に変更
-                if(getAnimalName == LayerMask.LayerToName(6))
+                if (getAnimalName == LayerMask.LayerToName(6))
                 {
                     this.getAnimalName = GetAnimals.Cow;
                 }
@@ -231,14 +260,13 @@ public class PlayerPalmate : MonoBehaviour
                 {
                     this.getAnimalName = GetAnimals.Mouse;
                 }
-                //つなげている数を更新
-                chainCount += 1;
             }
 
             if (this.getAnimalName != GetAnimals.NULL && this.getAnimalName.ToString() == getAnimalName)
             {
                 //捕まえた動物の関数を取得する
                 AnimalController animalController = hit2d.collider.gameObject.GetComponent<AnimalController>();
+
                 //同じ動物に当たってしまっていたら以降の処理はしない
                 if (!animalController.CanGet) return;
 
@@ -246,10 +274,14 @@ public class PlayerPalmate : MonoBehaviour
                 if (animalController.CanGet)
                 {
                     PlayBGM(touchSE);
-                    //要素の末端に追加する
-                    animalInfo.Enqueue(hit2d.collider.gameObject);
+                    //Debug.Log("色の変更開始");
+                    animalController.ChangeColor();
+                    animalController.CanselGet();
                     //捕まえた動物の捕まえたフラグをfalseにする
-                    animalController.CanGet = false;
+                    //animalController.CanGet = false;
+                    //Debug.Log("canGet:" + animalController.CanGet);
+                    //要素の末端に追加する
+                    animalInfo.Enqueue(hit2d.collider.gameObject);                    
                     //つなげている数を更新
                     chainCount += 1;
                     StartCoroutine(DerayTime());
@@ -257,8 +289,10 @@ public class PlayerPalmate : MonoBehaviour
             }
         }
 
+        //触れたオブジェクトがアイテムなら
         if(hit2d.collider.tag == "Item")
         {
+            if(!doSwaip) doSwaip = true;
             //レイヤーマスクを獲得する
             string getItemName = LayerMask.LayerToName(hit2d.collider.gameObject.layer);
             //ラム酒を取得した場合
@@ -279,6 +313,8 @@ public class PlayerPalmate : MonoBehaviour
     //時間計測
     private void CountTime()
     {
+        Debug.Log("dontStart:" + dontStart);
+        Debug.Log("openMenu:" + openMenu);
         countTime += Time.deltaTime;
         if (countTime >= 1.0f)
         {
@@ -371,7 +407,6 @@ public class PlayerPalmate : MonoBehaviour
         effect[effectCount].PlayEffect(animal);
         //つなげた数を増やす
         effectCount++;
-        //Debug.Log(animalInfo.Count);
         //要素の削除
         am.SponeAnimal(animalInfo.Dequeue());
         //Debug.Log("処理完了");
@@ -381,22 +416,23 @@ public class PlayerPalmate : MonoBehaviour
 
     private void DoPowerUp()
     {
-        doPoworUp = true;
+        StartCoroutine(PowerUpTime());
     }
 
     private void DoPowerDown()
     {
-        doPoworDwon = false;
+        StartCoroutine(PowerDownTime());
     }
 
     private IEnumerator StartCountDown()
     {
-        for(int count = 3; count >= 0; count--)
+        for (int count = 3; count >= 0; count--)
         {
-            Debug.Log(count);
+            //Debug.Log(count);
             yield return new WaitForSeconds(1);
         }
-        doStop = false;
+        am.SetAnimals();
+        yield break;
     }
 
     public void StartCountDownAnim()
@@ -406,13 +442,14 @@ public class PlayerPalmate : MonoBehaviour
 
     public void ReturnGame()
     {
-        doStop = false;
+        dontStart = false;
     }
 
     private IEnumerator ActiveEffect()
     {
+        doSwaip = false;
         //スコア加算
-        Debug.Log("chainCount" + chainCount);
+        //Debug.Log("chainCount" + chainCount);
         if(getAnimalName == GetAnimals.Cow)
         {
             GetCow(chainCount);
@@ -426,10 +463,11 @@ public class PlayerPalmate : MonoBehaviour
         while (animalInfo.Count != 0)
         {
             //エフェクト再生
+            //Debug.Log(animalInfo.Count);
             Effect(animalInfo.Peek());
             //動物に応じて呼び出す鳴き声を変更する
-            if (animalName == "Cow") PlayBGM(cowSE);
-            if (animalName == "Mouse") PlayBGM(mouseSE);
+            if (getAnimalName == GetAnimals.Cow) PlayBGM(cowSE);
+            if (getAnimalName == GetAnimals.Mouse) PlayBGM(mouseSE);
             yield return new WaitForSeconds(waitEffectTime);
         }
         //記憶する名前の初期化
@@ -444,5 +482,23 @@ public class PlayerPalmate : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         canAnimal = true;
         yield return null;
+    }
+
+    //パワーアップ処理（指定秒数間行う処理）
+    private IEnumerator PowerUpTime()
+    {
+        playerState = PlayerState.POWERUP;
+        yield return new WaitForSeconds(powerupTime);
+        getCurry = false;
+        playerState = PlayerState.NULL;
+    }
+
+    //パワーダウン処理（指定秒数間行う処理）
+    private IEnumerator PowerDownTime()
+    {
+        playerState = PlayerState.POWERDOWN;
+        yield return new WaitForSeconds(powerdownTime);
+        getRum = false;
+        playerState = PlayerState.NULL;
     }
 }
