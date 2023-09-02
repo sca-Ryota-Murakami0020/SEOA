@@ -12,6 +12,8 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private float powerdownSpeed;
     //チェイン中の動物の動き
     [SerializeField] private float slowSpeed;
+    //ステージに残留できる時間
+    [SerializeField] private float stageAlive;
     //捕まえた判定
     private bool canGet = false;
     //出現が許可された動物かを判定するフラグ
@@ -28,7 +30,7 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private Color changeColor;
     //元の色
     [SerializeField] private Color normalColor;
-    //
+    //動物のレンダー
     [SerializeField] private Renderer animalRenderer;
 
     public enum DoMove
@@ -68,12 +70,7 @@ public class AnimalController : MonoBehaviour
     private void Update()
     {
         CheckMove();   
-        //Debug.Log(pp.DoChain);
-        /*
-        if(animalRenderer.isVisible)
-        {
-            renderFlag = true;
-        }*/
+        
     }
 
     //状態管理

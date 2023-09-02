@@ -18,6 +18,7 @@ public class PlayerPalmate : MonoBehaviour
     //エフェクト
     [Header("呼び出すエフェクト")] [SerializeField]
     private effectsC[] effect;
+    [SerializeField] private startCountDownAni stc;
     
     //カウントダウン演出用アニメーション
     //[Header("カウントダウンアニメーション")][SerializeField]
@@ -197,17 +198,14 @@ public class PlayerPalmate : MonoBehaviour
         playerState = PlayerState.NULL;
         getAnimalName = GetAnimals.NULL;
         animalInfo = new Queue<GameObject>();
+
+        //カウントダウン
+        stc.StartContDown();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(dontStart)
-        {            
-            StartCoroutine(StartCountDown());
-            dontStart = false;
-        }
-
         if((!dontStart) && (!openMenu))
         {
             //時間計測
@@ -232,8 +230,7 @@ public class PlayerPalmate : MonoBehaviour
 
     //スワイプ処理
     private void TryCatchingAnimals()
-    {
-        
+    {       
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
         //何もないところをタップorスワイプ中なら
@@ -433,11 +430,6 @@ public class PlayerPalmate : MonoBehaviour
         }
         am.SetAnimals();
         yield break;
-    }
-
-    public void StartCountDownAnim()
-    {
-
     }
 
     public void ReturnGame()
