@@ -12,14 +12,14 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private float powerdownSpeed;
     //チェイン中の動物の動き
     [SerializeField] private float slowSpeed;
-    //ステージに残留できる時間
-    [SerializeField] private float stageAlive;
+    //
+    [SerializeField] private float angleRange;
     //捕まえた判定
     private bool canGet = false;
     //出現が許可された動物かを判定するフラグ
     private bool selectFag = false;
-    //映っているかのフラグ
-    private bool renderFlag = false;
+    //待機時間
+    private float waitTime = 0.0f;
     //PlayerPlamate
     [SerializeField] private PlayerPalmate pp;
     //AnimalManager
@@ -30,8 +30,6 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private Color changeColor;
     //元の色
     [SerializeField] private Color normalColor;
-    //動物のレンダー
-    [SerializeField] private Renderer animalRenderer;
 
     public enum DoMove
     {
@@ -55,12 +53,6 @@ public class AnimalController : MonoBehaviour
         set { this.selectFag = value;}
     }
 
-    public bool RenderFlag
-    {
-        get { return this.renderFlag;}
-        set { this.renderFlag = value;}
-    }
-
     public DoMove Move
     {
         get { return this.canMove;}
@@ -69,8 +61,7 @@ public class AnimalController : MonoBehaviour
 
     private void Update()
     {
-        CheckMove();   
-        
+        CheckMove();          
     }
 
     //状態管理
@@ -80,8 +71,7 @@ public class AnimalController : MonoBehaviour
         if(this.selectFag)
         {
             //状況判断関数
-            CheckGame();   
-            //Debug.Log(renderFlag);
+            CheckGame();  
         }       
     }
 
@@ -118,22 +108,9 @@ public class AnimalController : MonoBehaviour
             MoveAnimal();
         }
 
-        if(this.animalRenderer.isVisible)
-        {
-            this.renderFlag = true;
-        }
+        //進行方向に動物がいることを検知する関数
+        CheckForwardAnimal();
 
-        if(!this.animalRenderer.isVisible)
-        {
-            this.renderFlag = false;
-            Debug.Log("映ってないよ");
-        }
-
-        //もし捕まらずに画面外に出た場合
-        if(!renderFlag && this.selectFag)
-        {
-            am.ReturnAnimal(this.gameObject);
-        }
     }
 
     //当たり判定
@@ -141,14 +118,7 @@ public class AnimalController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("animal") && this.selectFag)
         {
-            //Debug.Log("反転開始");
-            //追加する角度をランダムで決定する
-            int randomRad = Random.Range(-90, 90);
-            //動物が持つ方向を変数化する
-            Quaternion animalAngle = this.transform.rotation;
-            //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
-            animalAngle.z += randomRad;
-            //Debug.Log("反転完了");
+            ChangeAngleAnimal();
         }
 
         if (collision.gameObject.CompareTag("car") && this.selectFag)
@@ -158,16 +128,16 @@ public class AnimalController : MonoBehaviour
         }
     }
 
+    //削除処理
     private void OnTriggerExit2D(Collider2D collision)
     {
         if(collision.gameObject.CompareTag("OutStage") && this.selectFag)
         {
             am.BackAnimalList(this.gameObject);
-            Debug.Log("動物呼び出し");
         }
     }
 
-    //挙動
+    //移動
     private void MoveAnimal()
     {
         //ローカル変数
@@ -198,6 +168,39 @@ public class AnimalController : MonoBehaviour
         this.transform.position += this.transform.up * localSpeed;
     }
 
+    //確保された際にオブジェクトのカラーを変更する
+    public void ChangeColor() => sa.skeleton.SetColor(changeColor);
+
+    //進行方向に動物がいるか判断する関数
+    public void CheckForwardAnimal()
+    {
+        //rayを飛ばすオブジェクトを定義
+        Vector2 rayOriginPos = this.transform.position;
+        Vector2 rayAngle = new Vector2(this.transform.rotation.x,this.transform.rotation.y);
+        RaycastHit2D rayHitObject = Physics2D.Raycast(rayOriginPos, rayAngle, angleRange);
+        Debug.DrawRay(rayOriginPos, rayAngle * angleRange, Color.red, 5f);
+
+        //rayを飛ばすオブジェクトが行動が許可されているオブジェクト且つ当たったオブジェクトのタグがanimalなら
+        if(rayHitObject.collider.gameObject.CompareTag("animal") && this.selectFag)
+        {
+            ChangeAngleAnimal();
+        }
+    }
+
+    //旋回処理
+    public void ChangeAngleAnimal()
+    {
+        //追加する角度をランダムで決定する
+        float randomNum = Random.Range(1, 2);
+        float randomRad = 0;
+        if (randomNum % 2 == 0) randomRad = 120.0f;
+        if (randomRad % 2 != 0) randomRad = -120.0f;
+        //動物が持つ方向を変数化する
+        Quaternion animalAngle = this.transform.rotation;
+        //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
+        animalAngle.z += randomRad;
+    }
+
     //スポナーに設置されている動物を動かすために各パラメーターを初期化する
     public void ResetPar()
     {
@@ -215,21 +218,5 @@ public class AnimalController : MonoBehaviour
     }
 
     //ここはgetFlagのみをfalseにしたい時に使う関数
-    public void CanselGet() => this.canGet = false;
-
-    //確保された際にオブジェクトのカラーを変更する
-    public void ChangeColor() => sa.skeleton.SetColor(changeColor);
-
-    //見えている時
-    private void OnBecameVisible()
-    {
-        
-    }
-
-    //見えていない時
-    private void OnBecameInvisible()
-    {
-        
-    }
-
+    public void NotGet() => this.canGet = false;
 }

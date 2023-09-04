@@ -138,10 +138,16 @@ public class PlayerPalmate : MonoBehaviour
         set { this._score = value; }
     }
 
-    public int ChainCount
+    public int EffectCount
     {
         get { return this.effectCount;}
         set { this.effectCount = value;}
+    }
+
+    public int ChainCount
+    {
+        get { return this.chainCount;}
+        set { this.chainCount = value;}
     }
 
     public bool DontStart
@@ -270,7 +276,7 @@ public class PlayerPalmate : MonoBehaviour
                     PlayBGM(touchSE);
                     //Debug.Log("色の変更開始");
                     animalController.ChangeColor();
-                    animalController.CanselGet();
+                    animalController.NotGet();
                     //捕まえた動物の捕まえたフラグをfalseにする
                     //animalController.CanGet = false;
                     //Debug.Log("canGet:" + animalController.CanGet);
