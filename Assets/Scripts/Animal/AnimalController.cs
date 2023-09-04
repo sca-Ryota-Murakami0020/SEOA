@@ -107,6 +107,7 @@ public class AnimalController : MonoBehaviour
         {
             MoveAnimal();
         }
+        Debug.Log(transform.rotation.z);
     }
 
     //当たり判定
@@ -124,6 +125,7 @@ public class AnimalController : MonoBehaviour
         }
     }
 
+    
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //進行方向に動物がいれば
@@ -132,6 +134,15 @@ public class AnimalController : MonoBehaviour
             ChangeAngleAnimal();
         }
     }
+    /*
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        //角度変更が終了していないなら
+        if ((collision.gameObject.CompareTag("plusAngle") || collision.gameObject.CompareTag("animal")) && this.selectFag)
+        {
+            ChangeAngleAnimal();
+        }
+    }*/
 
     //削除処理
     private void OnTriggerExit2D(Collider2D collision)
@@ -181,37 +192,21 @@ public class AnimalController : MonoBehaviour
     public void ChangeAngleAnimal()
     {
         //スピードを変更する（減速）
-        float defultSpeed = this.normalSpeed;
+        this.canMove = DoMove.SLOW;
         //追加する角度をランダムで決定する
         float randomNum = Random.Range(1, 2);
         float randomRad = 0;
         if (randomNum % 2 == 0) randomRad = 120.0f;
         if (randomRad % 2 != 0) randomRad = -120.0f;
         //動物が持つ方向を変数化する
-        Quaternion animalAngle = this.transform.rotation;
+        //Quaternion animalAngle = this.transform.rotation;
         //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
-        int loopCount = 0;
-        while(loopCount<=120)
-        {
-            if (randomRad == 120.0f)
-            {
-                for (float count = 0.0f; count < randomRad; count += 1.0f)
-                {
-                    animalAngle.z += 1.0f;
-                }
-            }
-            else
-            {
-                for (float count = 0.0f; count > randomRad; count -= 1.0f)
-                {
-                    animalAngle.z += 1.0f;
-                }
-            }
-            loopCount++;
-        }
+        //animalAngle.z = animalAngle.z + randomRad;
+        //this.transform.rotation = animalAngle;
+        this.transform.rotation = Quaternion.AngleAxis(this.transform.rotation.z + randomRad,Vector3.forward);
                
         //スピードを元の数値に直す
-        this.normalSpeed = defultSpeed;
+        this.canMove = DoMove.OK;
     }
 
     //スポナーに設置されている動物を動かすために各パラメーターを初期化する
