@@ -9,6 +9,7 @@ TagManager:
   - animal
   - item
   - OutStage
+  - plusAngle
   layers:
   - Default
   - TransparentFX

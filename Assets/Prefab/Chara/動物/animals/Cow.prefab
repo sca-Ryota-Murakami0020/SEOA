@@ -71,6 +71,18 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 6465167301028337922, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_Name
+      value: Angle
+      objectReference: {fileID: 0}
+    - target: {fileID: 7181283693128017482, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 7181283693128017482, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 5.63
+      objectReference: {fileID: 0}
     - target: {fileID: 7246491873195781026, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -138,10 +150,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938815285cdac3e4782bbad48bb8c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSpeed: 0.0003
+  normalSpeed: 0.0001
   powerdownSpeed: 0.02
   slowSpeed: 0.1
-  angleRange: 3
+  angleRange: 0.2
   pp: {fileID: 0}
   am: {fileID: 0}
   sa: {fileID: 6277589610635493044}

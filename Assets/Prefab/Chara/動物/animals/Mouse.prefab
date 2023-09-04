@@ -20,6 +20,10 @@ PrefabInstance:
       value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: -8068448458600205544, guid: a82318d78849c8449b9eb712e797be10, type: 3}
+      propertyPath: angleRange
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8068448458600205544, guid: a82318d78849c8449b9eb712e797be10, type: 3}
       propertyPath: changeColor
       value: 
       objectReference: {fileID: 2100000, guid: 48b08164aacddd84fac34ca95a5c7abd, type: 2}
@@ -75,6 +79,10 @@ PrefabInstance:
       propertyPath: _animationName
       value: animation
       objectReference: {fileID: 0}
+    - target: {fileID: 3220311885388065414, guid: a82318d78849c8449b9eb712e797be10, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3645952817517314087, guid: a82318d78849c8449b9eb712e797be10, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -127,7 +135,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mouse
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5222126207587937614, guid: a82318d78849c8449b9eb712e797be10, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a82318d78849c8449b9eb712e797be10, type: 3}
 --- !u!1 &7914563505532244335 stripped
 GameObject:

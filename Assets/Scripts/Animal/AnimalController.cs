@@ -103,14 +103,10 @@ public class AnimalController : MonoBehaviour
         }
 
         //上記の状態以外の状態なら
-        if (canMove == DoMove.OK)
+        if (canMove == DoMove.OK || canMove == DoMove.SLOW)
         {
             MoveAnimal();
         }
-
-        //進行方向に動物がいることを検知する関数
-        CheckForwardAnimal();
-
     }
 
     //当たり判定
@@ -125,6 +121,15 @@ public class AnimalController : MonoBehaviour
         {
             //Debug.Log("弾かれた");
             am.ReturnAnimal(this.gameObject);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        //進行方向に動物がいれば
+        if((collision.gameObject.CompareTag("plusAngle")||collision.gameObject.CompareTag("animal")) && this.selectFag)
+        {
+            ChangeAngleAnimal();
         }
     }
 
@@ -153,6 +158,7 @@ public class AnimalController : MonoBehaviour
                 localSpeed *= this.slowSpeed;
             }
         }
+
         //ニュートラルな動き
         if (this.canMove != DoMove.SLOW && pp.PlayerSituation == PlayerPalmate.PlayerState.NULL)
         {
@@ -171,25 +177,11 @@ public class AnimalController : MonoBehaviour
     //確保された際にオブジェクトのカラーを変更する
     public void ChangeColor() => sa.skeleton.SetColor(changeColor);
 
-    //進行方向に動物がいるか判断する関数
-    public void CheckForwardAnimal()
-    {
-        //rayを飛ばすオブジェクトを定義
-        Vector2 rayOriginPos = this.transform.position;
-        Vector2 rayAngle = new Vector2(this.transform.rotation.x,this.transform.rotation.y);
-        RaycastHit2D rayHitObject = Physics2D.Raycast(rayOriginPos, rayAngle, angleRange);
-        Debug.DrawRay(rayOriginPos, rayAngle * angleRange, Color.red, 5f);
-
-        //rayを飛ばすオブジェクトが行動が許可されているオブジェクト且つ当たったオブジェクトのタグがanimalなら
-        if(rayHitObject.collider.gameObject.CompareTag("animal") && this.selectFag)
-        {
-            ChangeAngleAnimal();
-        }
-    }
-
     //旋回処理
     public void ChangeAngleAnimal()
     {
+        //スピードを変更する（減速）
+        float defultSpeed = this.normalSpeed;
         //追加する角度をランダムで決定する
         float randomNum = Random.Range(1, 2);
         float randomRad = 0;
@@ -198,7 +190,28 @@ public class AnimalController : MonoBehaviour
         //動物が持つ方向を変数化する
         Quaternion animalAngle = this.transform.rotation;
         //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
-        animalAngle.z += randomRad;
+        int loopCount = 0;
+        while(loopCount<=120)
+        {
+            if (randomRad == 120.0f)
+            {
+                for (float count = 0.0f; count < randomRad; count += 1.0f)
+                {
+                    animalAngle.z += 1.0f;
+                }
+            }
+            else
+            {
+                for (float count = 0.0f; count > randomRad; count -= 1.0f)
+                {
+                    animalAngle.z += 1.0f;
+                }
+            }
+            loopCount++;
+        }
+               
+        //スピードを元の数値に直す
+        this.normalSpeed = defultSpeed;
     }
 
     //スポナーに設置されている動物を動かすために各パラメーターを初期化する
