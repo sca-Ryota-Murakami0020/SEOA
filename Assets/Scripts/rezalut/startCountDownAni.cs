@@ -5,16 +5,9 @@ using UnityEngine.UI;
 
 public class startCountDownAni : MonoBehaviour
 {
-    [Header("カウント用Image")][SerializeField]
-    private Image countImage;
-
-    [SerializeField] private Sprite[] countSprite;
-
     [SerializeField] private PlayerPalmate pp;
 
     [SerializeField] private AnimalManager am;
-
-    private int count = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -26,17 +19,6 @@ public class startCountDownAni : MonoBehaviour
     void Update()
     {
         
-    }
-
-    public void StartContDown()
-    {
-
-    }
-
-    public void CheckContDown()
-    {
-        countImage.sprite = countSprite[count];
-        count++;
     }
 
     public void StartSetAnimal()

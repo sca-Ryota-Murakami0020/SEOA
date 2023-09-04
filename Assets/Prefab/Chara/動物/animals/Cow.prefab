@@ -94,11 +94,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 4695470606661386446, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
   m_PrefabInstance: {fileID: 8759847793203226155}
   m_PrefabAsset: {fileID: 0}
---- !u!23 &2090108790803844489 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 7246491873195781026, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
-  m_PrefabInstance: {fileID: 8759847793203226155}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6277589610635493044 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3354972083489757343, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
@@ -110,6 +105,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!50 &5660543773927143831
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4087177790137902821}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!114 &1512401957
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -125,8 +141,10 @@ MonoBehaviour:
   normalSpeed: 0.0015
   powerdownSpeed: 0.02
   slowSpeed: 0.1
+  stageAlive: 0
   pp: {fileID: 0}
+  am: {fileID: 0}
   sa: {fileID: 6277589610635493044}
-  sr: {fileID: 2090108790803844489}
   changeColor: {r: 0.5283019, g: 0.50537556, b: 0.50537556, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
+  animalRenderer: {fileID: 0}

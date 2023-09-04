@@ -136,6 +136,37 @@ public class AnimalController : MonoBehaviour
         }
     }
 
+    //当たり判定
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("animal") && this.selectFag)
+        {
+            //Debug.Log("反転開始");
+            //追加する角度をランダムで決定する
+            int randomRad = Random.Range(-90, 90);
+            //動物が持つ方向を変数化する
+            Quaternion animalAngle = this.transform.rotation;
+            //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
+            animalAngle.z += randomRad;
+            //Debug.Log("反転完了");
+        }
+
+        if (collision.gameObject.CompareTag("car") && this.selectFag)
+        {
+            //Debug.Log("弾かれた");
+            am.ReturnAnimal(this.gameObject);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.gameObject.CompareTag("OutStage") && this.selectFag)
+        {
+            am.BackAnimalList(this.gameObject);
+            Debug.Log("動物呼び出し");
+        }
+    }
+
     //挙動
     private void MoveAnimal()
     {
@@ -201,11 +232,4 @@ public class AnimalController : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.gameObject.CompareTag("Car"))
-        {
-            am.ReturnAnimal(this.gameObject);
-        }
-    }
 }

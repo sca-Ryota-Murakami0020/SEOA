@@ -18,7 +18,6 @@ public class PlayerPalmate : MonoBehaviour
     //エフェクト
     [Header("呼び出すエフェクト")] [SerializeField]
     private effectsC[] effect;
-    [SerializeField] private startCountDownAni stc;
     
     //カウントダウン演出用アニメーション
     //[Header("カウントダウンアニメーション")][SerializeField]
@@ -198,9 +197,6 @@ public class PlayerPalmate : MonoBehaviour
         playerState = PlayerState.NULL;
         getAnimalName = GetAnimals.NULL;
         animalInfo = new Queue<GameObject>();
-
-        //カウントダウン
-        stc.StartContDown();
     }
 
     // Update is called once per frame
@@ -232,7 +228,7 @@ public class PlayerPalmate : MonoBehaviour
     private void TryCatchingAnimals()
     {       
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100);
+        RaycastHit2D hit2d = Physics2D.Raycast((Vector2)ray.origin, (Vector2)ray.direction, 100 );
         //何もないところをタップorスワイプ中なら
         if (hit2d.collider == null)
         {
@@ -241,6 +237,7 @@ public class PlayerPalmate : MonoBehaviour
         
         if (hit2d.collider.tag == "animal")
         {
+            //Debug.Log("繋げてる");
             doSwaip = true;
             //レイヤーマスクを獲得する
             string getAnimalName = LayerMask.LayerToName(hit2d.collider.gameObject.layer);
@@ -281,7 +278,6 @@ public class PlayerPalmate : MonoBehaviour
                     animalInfo.Enqueue(hit2d.collider.gameObject);                    
                     //つなげている数を更新
                     chainCount += 1;
-                    StartCoroutine(DerayTime());
                 }
             }
         }
@@ -310,8 +306,6 @@ public class PlayerPalmate : MonoBehaviour
     //時間計測
     private void CountTime()
     {
-        Debug.Log("dontStart:" + dontStart);
-        Debug.Log("openMenu:" + openMenu);
         countTime += Time.deltaTime;
         if (countTime >= 1.0f)
         {
@@ -411,30 +405,28 @@ public class PlayerPalmate : MonoBehaviour
         if (effect.Length == effectCount) effectCount = 0;
     }
 
+    //パワーアップ処理
     private void DoPowerUp()
     {
         StartCoroutine(PowerUpTime());
     }
 
+    //パワーダウン処理
     private void DoPowerDown()
     {
         StartCoroutine(PowerDownTime());
     }
 
-    private IEnumerator StartCountDown()
+    //メニュー中
+    public void PlayOpenMenu()
     {
-        for (int count = 3; count >= 0; count--)
-        {
-            //Debug.Log(count);
-            yield return new WaitForSeconds(1);
-        }
-        am.SetAnimals();
-        yield break;
+        openMenu = true;
     }
 
-    public void ReturnGame()
+    //メニューからゲームに戻る
+    public void BackGameFromMenu()
     {
-        dontStart = false;
+        openMenu = false;
     }
 
     private IEnumerator ActiveEffect()
@@ -465,14 +457,6 @@ public class PlayerPalmate : MonoBehaviour
         //記憶する名前の初期化
         animalName = null;
         getAnimalName = GetAnimals.NULL;
-        yield return null;
-    }
-
-    private IEnumerator DerayTime()
-    {
-        canAnimal = false;
-        yield return new WaitForSeconds(waitTime);
-        canAnimal = true;
         yield return null;
     }
 
