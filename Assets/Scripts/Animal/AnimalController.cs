@@ -20,6 +20,8 @@ public class AnimalController : MonoBehaviour
     private bool selectFag = false;
     //待機時間
     private float waitTime = 0.0f;
+    //回転中
+    private bool doTurn = false;
     //PlayerPlamate
     [SerializeField] private PlayerPalmate pp;
     //AnimalManager
@@ -30,6 +32,8 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private Color changeColor;
     //元の色
     [SerializeField] private Color normalColor;
+    //原点
+    [SerializeField] private GameObject originObject;
 
     public enum DoMove
     {
@@ -107,7 +111,6 @@ public class AnimalController : MonoBehaviour
         {
             MoveAnimal();
         }
-        Debug.Log(transform.rotation.z);
     }
 
     //当たり判定
@@ -129,20 +132,12 @@ public class AnimalController : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //進行方向に動物がいれば
-        if((collision.gameObject.CompareTag("plusAngle")||collision.gameObject.CompareTag("animal")) && this.selectFag)
+        if((collision.gameObject.CompareTag("plusAngle")||collision.gameObject.CompareTag("animal"))
+            && this.selectFag && !doTurn)
         {
             ChangeAngleAnimal();
         }
     }
-    /*
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        //角度変更が終了していないなら
-        if ((collision.gameObject.CompareTag("plusAngle") || collision.gameObject.CompareTag("animal")) && this.selectFag)
-        {
-            ChangeAngleAnimal();
-        }
-    }*/
 
     //削除処理
     private void OnTriggerExit2D(Collider2D collision)
@@ -191,22 +186,8 @@ public class AnimalController : MonoBehaviour
     //旋回処理
     public void ChangeAngleAnimal()
     {
-        //スピードを変更する（減速）
-        this.canMove = DoMove.SLOW;
-        //追加する角度をランダムで決定する
-        float randomNum = Random.Range(1, 2);
-        float randomRad = 0;
-        if (randomNum % 2 == 0) randomRad = 120.0f;
-        if (randomRad % 2 != 0) randomRad = -120.0f;
         //動物が持つ方向を変数化する
-        //Quaternion animalAngle = this.transform.rotation;
-        //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
-        //animalAngle.z = animalAngle.z + randomRad;
-        //this.transform.rotation = animalAngle;
-        this.transform.rotation = Quaternion.AngleAxis(this.transform.rotation.z + randomRad,Vector3.forward);
-               
-        //スピードを元の数値に直す
-        this.canMove = DoMove.OK;
+        //StartCoroutine(TurnAnimalAction());
     }
 
     //スポナーに設置されている動物を動かすために各パラメーターを初期化する
@@ -227,4 +208,47 @@ public class AnimalController : MonoBehaviour
 
     //ここはgetFlagのみをfalseにしたい時に使う関数
     public void NotGet() => this.canGet = false;
+
+    /*
+    //旋回行動
+    private IEnumerator TurnAnimalAction()
+    {
+        //スピードを変更する（減速）
+        this.canMove = DoMove.SLOW;
+        doTurn = true;
+        //追加する角度をランダムで決定する
+        float randomNum = Random.Range(1, 2);
+        bool pulsRad = false;
+        if (randomNum % 2 == 0) pulsRad = true;
+        if (randomNum % 2 != 0) pulsRad = false;
+        //回転を変数化
+        Quaternion animalAngle = this.transform.rotation;
+        //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
+        int countRad = 0;
+        float addRad = 1.0f;
+        
+        while(countRad < 120)
+        {
+            if(pulsRad)
+            {
+                //animalAngle.z += addRad;
+                //this.transform.rotation = Quaternion.AngleAxis(addRad, this.transform.forward);Space.Self)
+                transform.Rotate(0, 0, addRad);
+            }
+            if(!pulsRad)
+            {
+                //animalAngle.z -= addRad;
+                //this.transform.rotation = Quaternion.AngleAxis(-addRad, this.transform.forward);
+                transform.Rotate(0, 0, -addRad);
+            }
+            //this.transform.rotation = animalAngle;
+            countRad ++;
+            yield return new WaitForEndOfFrame();
+        }
+
+        //スピードを元の数値に直す
+        this.canMove = DoMove.OK;
+        doTurn = false;
+        yield break;
+    }*/
 }

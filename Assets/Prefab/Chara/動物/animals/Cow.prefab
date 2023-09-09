@@ -81,7 +81,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7181283693128017482, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.63
+      value: 4.79
       objectReference: {fileID: 0}
     - target: {fileID: 7246491873195781026, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_Materials.Array.size
@@ -99,6 +99,22 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[2]
       value: 
       objectReference: {fileID: 2100000, guid: 9ce65397613167e4b822b72cfe58a60b, type: 2}
+    - target: {fileID: 8839816465858081717, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_Size.x
+      value: 0.87265825
+      objectReference: {fileID: 0}
+    - target: {fileID: 8839816465858081717, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_Size.y
+      value: 0.87265825
+      objectReference: {fileID: 0}
+    - target: {fileID: 8839816465858081717, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_Offset.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8839816465858081717, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_Offset.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
 --- !u!1 &4087177790137902821 stripped
@@ -150,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938815285cdac3e4782bbad48bb8c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSpeed: 0.0001
+  normalSpeed: 0.03
   powerdownSpeed: 0.02
   slowSpeed: 0.1
   angleRange: 0.2
@@ -159,3 +175,4 @@ MonoBehaviour:
   sa: {fileID: 6277589610635493044}
   changeColor: {r: 0.5283019, g: 0.50537556, b: 0.50537556, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
+  originObject: {fileID: 0}
