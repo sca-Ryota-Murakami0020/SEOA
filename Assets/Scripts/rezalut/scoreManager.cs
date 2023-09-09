@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class scoreManager : MonoBehaviour
 {
     //PlayerPalmate
-    private PlayerPalmate pp;
+    [SerializeField] private PlayerPalmate pp;
     //数字の画像
     [SerializeField] private Sprite[] numberImage;
     //数字の配置位置
@@ -18,7 +18,7 @@ public class scoreManager : MonoBehaviour
     void Start()
     {
         //参照
-        pp = GameObject.Find("Player").GetComponent<PlayerPalmate>();
+        //pp = GameObject.Find("Player").GetComponent<PlayerPalmate>();
 
         //数値の初期化
         for(int count = 0; count < imageNumber.Length; count++)
@@ -36,37 +36,33 @@ public class scoreManager : MonoBehaviour
     //スコア表示の更新
     public void UpdateScore(int score)
     {
-        //Debug.Log(score);
         //各桁の計算をおこなうために使う変数
         int count = 10;
         //１桁目から計算をおこなう
-        for(int imageCount = 0;imageCount < imageNumber.Length;imageCount++)
+        for(int imageCount = 0; imageCount < imageNumber.Length; imageCount++)
         {
             //１の位の計算
             if(imageCount <= 0)
             {
                 //仮に計算結果が9を超えているor0を下回っている場合0にする値
-                int showScore = score / count;
-                if(showScore < 0　|| showScore > imageNumber.Length)showScore =0;
-                imageNumber[imageCount].sprite = numberImage[showScore];
-                //Debug.Log("１の桁：" + showScore);
+                int showScore = score % count;
+                //if(showScore < 0　|| showScore > imageNumber.Length)showScore = 0;
+                imageNumber[imageCount].sprite = numberImage[showScore + 1];
             }
+
             //１０以上の位の計算
             if(imageCount >= 1)
             {
                 //仮に計算結果が9を超えているor0を下回っている場合0にする値
-                int showScore = score / count;
-                if (showScore < 0 || showScore > imageNumber.Length) showScore = 0;
+                int showScore = (score / count) % 10;
+                //if (showScore < 0 || showScore > imageNumber.Length) showScore = 0;
                 imageNumber[imageCount].sprite = numberImage[showScore];
-                //Debug.Log(count + "の桁：" + showScore);
-                if(imageCount >= 4)
+                if(Mathf.Log10(pp.Score) >= 5)
                 {
                     imageNumber[imageCount].enabled = true;
                 }
                 count *= 10;
             }
-            //ここで計算する桁が増加するのでcountも増加させる
-            
         }
     }
 

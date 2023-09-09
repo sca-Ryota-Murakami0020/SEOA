@@ -65,7 +65,7 @@ public class AnimalController : MonoBehaviour
 
     private void Update()
     {
-        CheckMove();          
+        CheckMove();
     }
 
     //ó‘ÔŠÇ—
@@ -107,9 +107,10 @@ public class AnimalController : MonoBehaviour
         }
 
         //ã‹L‚Ìó‘ÔˆÈŠO‚Ìó‘Ô‚È‚ç
-        if (canMove == DoMove.OK || canMove == DoMove.SLOW)
+        if ((canMove == DoMove.OK || canMove == DoMove.SLOW) && !pp.OpenMenu)
         {
             MoveAnimal();
+            //Debug.Log("“®‚¢‚Ä‚¢‚é");
         }
     }
 

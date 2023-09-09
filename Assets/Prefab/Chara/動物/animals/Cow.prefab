@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938815285cdac3e4782bbad48bb8c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSpeed: 0.03
+  normalSpeed: 0.06
   powerdownSpeed: 0.02
   slowSpeed: 0.1
   angleRange: 0.2
