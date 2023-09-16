@@ -22,7 +22,6 @@ namespace GameManeger
         public void FinishStartCountDown()
         {
             tm.DoCount = true;
-            
         }
 
         //ゲームを終了状態にする
@@ -30,6 +29,12 @@ namespace GameManeger
         {
             //Debug.Log("aaaaaaaaaa");
             tm.DoCount = false;
+        }
+
+        //カウントダウン用のImageを非表示にする
+        public void CloseCount()
+        {
+            tm.CloseCountDown();
         }
 
         //最初のカウントダウンを起動

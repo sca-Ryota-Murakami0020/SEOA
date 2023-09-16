@@ -42,7 +42,14 @@ namespace GameManeger
 
         private void Update()
         {
+            
+        }
+
+        private void FixedUpdate()
+        {
             UpdateScore();
+            Debug.Log("スコア：" + _score);
+            Debug.Log("OldScore：" + oldScore);
         }
 
         /*
@@ -84,7 +91,7 @@ namespace GameManeger
         public void UpdateScore()
         {
             //１ずつ加算していくようにするための加算方法
-            if(oldScore < _score)
+            if(oldScore <= _score && oldScore > 0)
             {
                 oldScore++;
                 int localOldScore = oldScore;

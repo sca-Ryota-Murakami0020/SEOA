@@ -153,7 +153,6 @@ public class PlayerPalmate : MonoBehaviour
                 //if(getRum) DoPowerDown();
                 StartCoroutine(ActiveEffect());
             }
-            Debug.Log("ÉvÉåÉCÉÑÅ[ë§" + tm.DoCount);
         }
     }
 

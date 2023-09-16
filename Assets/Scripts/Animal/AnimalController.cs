@@ -106,14 +106,11 @@ public class AnimalController : MonoBehaviour
         if (canMove != DoMove.NOT && tm.DoCount)
         {
             MoveAnimal();
-            Debug.Log("動いているフラグ:" + tm.DoCount);
 
             //フィーバー演出中orポーズ中なら
             if (!tm.DoCount)
             {
                 StopAnimal();
-                Debug.Log("入った");
-                Debug.Log("フラグ:" + tm.DoCount);
             }
         }
     }

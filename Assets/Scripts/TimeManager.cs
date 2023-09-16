@@ -21,6 +21,8 @@ namespace GameManeger
         private float countTime = 0.0f;
         //Audiosource
         private AudioSource audios = null;
+        //カウント表示
+        [SerializeField] private GameObject countImage;
 
         //数字のイメージ
         [Header("表示する数字のImage")]
@@ -59,7 +61,6 @@ namespace GameManeger
                 CountTimer();
                 PlayBGM();
             }
-            Debug.Log("タイマー側:" + doCount);
         }
 
         //時間計測
@@ -78,6 +79,7 @@ namespace GameManeger
                 //終了5秒前のアニメーションを呼び出す
                 if (gameTime <= 5 && !startEndCount)
                 {
+                    ShowCountDown();
                     cc.ActiveEndCountAnimation();
                 }
             }
@@ -105,6 +107,19 @@ namespace GameManeger
         {
             if (audios != null)
                 audios.PlayOneShot(clip);
+        }
+
+        //カウントダウン用のImageを表示
+        public void ShowCountDown()
+        {
+            countImage.SetActive(true);
+        }
+
+        //カウントダウン用のImageを非表示に
+        public void CloseCountDown()
+        {
+            Debug.Log("呼び出し");
+            countImage.SetActive(false);
         }
     }
 }
