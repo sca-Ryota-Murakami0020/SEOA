@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UI;
+using GameManeger;
 
 public class PlayerPalmate : MonoBehaviour
 {
     #region//参照するスクリプト
     //scoreManager
-    private scoreManager sm;
+    [SerializeField] private scoreManager sm;
+    //TimeManager
+    [SerializeField] private TimeManager tm;
     //GameManager
-    private GameManager gm;
+    [SerializeField] private GameManager gm;
     //Audiosource
     private AudioSource audios = null;
     //AnimalManager
@@ -34,48 +37,21 @@ public class PlayerPalmate : MonoBehaviour
     private bool doPoworUp;
     //ラム酒を取得し、デバフを受けている状態
     private bool doPoworDwon;
-    //ゲーム開始３カウント前の操作できない状態
-    private bool dontStart;
-    //メニューを開いている状態
-    private bool openMenu;
     //カレーを取得した場合
-    private bool getCurry;
+    private bool getCurry = false;
     //ラム酒を取得した場合
-    private bool getRum;
-    //確保間隔を設ける
-    private bool canAnimal;
+    private bool getRum = false;
     //獲得した動物の名前
-    private string animalName;
+    private string animalName = null;
     //エフェクトを呼び出した回数
-    private int effectCount;
-    //1ゲーム中の獲得スコア
-    private int _score;
+    private int effectCount = 0;
     //つなげた数
-    private int chainCount;
-    //ゲーム時間(画像で数字の表示をおこなうため、整数型の方が実装しやすいから)
-    private int gameTime;
-    //表示する画像の番地数を格納する変数
-    private int spriteCount;
-    //細かい時間経過をおこなうために用いる小数型の変数
-    private float countTime;
-    /*
-    //1フレーム前のスワイプの位置
-    private Vector2 oldFlameTouchPos;
-    //現在のスワイプ位置
-    private Vector2 nowTouchPos;
-    //現在つなげる始点になっている動物の位置
-    private Vector2 oldTouchPos;
-    */
-    //捕まえた動物の場所（動物は常に動くのでオブジェクトで格納する方が正確な位置にエフェクトを呼び出せる）
-    private Queue<GameObject> animalInfo;
-    
-    //タッチ関数
-    private Touch touch;
+    private int chainCount = 0;
+    //獲得した
+    private Queue<GameObject> animalInfo = new Queue<GameObject>();
     #endregion
 
     #region//インスペクターで変更する値
-    //確保間隔時間
-    [SerializeField] private float waitTime;
     //牛のスコア
     [SerializeField] private int cowScore;
     //ネズミのスコア
@@ -86,14 +62,7 @@ public class PlayerPalmate : MonoBehaviour
     [SerializeField] private float powerupTime;
     //パワーダウン時間
     [SerializeField] private float powerdownTime;
-    //数字のイメージ
-    [Header("表示する数字のImage")]
-    [SerializeField]
-    private Sprite[] numberImage;
-    //数字の配置位置
-    [Header("表示するImageの配置位置")]
-    [SerializeField]
-    private Image[] imageNumber;
+    
     #endregion
 
     #region//クラス
@@ -113,8 +82,8 @@ public class PlayerPalmate : MonoBehaviour
     };
 
     //変数
-    private PlayerState playerState;
-    private GetAnimals getAnimalName;
+    private PlayerState playerState = PlayerState.NULL;
+    private GetAnimals getAnimalName = GetAnimals.NULL;
     #endregion
 
     #region//効果音関係
@@ -126,18 +95,10 @@ public class PlayerPalmate : MonoBehaviour
     [SerializeField] private AudioClip touchSE;
     //スワイプしたときにゲージが減る効果音
     [SerializeField] private AudioClip gazeSE;
-    //６０～２０秒のＢＧＭ
-    [SerializeField] private AudioClip beginBGM;
-    //ラストスパートBGＭ
-    [SerializeField] private AudioClip lastBGM;
+
     #endregion
 
     #region//プロパティ
-    public int Score {
-        get { return this._score; }
-        set { this._score = value; }
-    }
-
     public int EffectCount
     {
         get { return this.effectCount;}
@@ -148,18 +109,6 @@ public class PlayerPalmate : MonoBehaviour
     {
         get { return this.chainCount;}
         set { this.chainCount = value;}
-    }
-
-    public bool DontStart
-    {
-        get { return this.dontStart;}
-        set { this.dontStart = value;}
-    }
-
-    public bool OpenMenu
-    {
-        get { return this.openMenu;}
-        set { this.openMenu = value;}
     }
 
     public bool DoChain
@@ -185,35 +134,13 @@ public class PlayerPalmate : MonoBehaviour
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         sm = GameObject.Find("Scorecounter").GetComponent<scoreManager>();
         audios = GetComponent<AudioSource>();
-
-        //初期化
-        _score = 0;
-        gameTime = 60;
-        countTime = 0.0f;
-        effectCount = 0;
-        chainCount = 0;
-
-        dontStart = true;
-        doPoworUp = false;
-        doPoworDwon = false;
-        canAnimal = true;
-        openMenu = false;
-
-        animalName = null;
-        playerState = PlayerState.NULL;
-        getAnimalName = GetAnimals.NULL;
-        animalInfo = new Queue<GameObject>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if((!dontStart) && (!openMenu))
+        if(tm.DoCount)
         {
-            //時間計測
-            CountTime();
-            //BGMを流す関数
-            PlayBGM();
             //操作
             if (Input.GetMouseButton(0))
             {
@@ -277,9 +204,6 @@ public class PlayerPalmate : MonoBehaviour
                     //Debug.Log("色の変更開始");
                     animalController.ChangeColor();
                     animalController.NotGet();
-                    //捕まえた動物の捕まえたフラグをfalseにする
-                    //animalController.CanGet = false;
-                    //Debug.Log("canGet:" + animalController.CanGet);
                     //要素の末端に追加する
                     animalInfo.Enqueue(hit2d.collider.gameObject);                    
                     //つなげている数を更新
@@ -309,64 +233,10 @@ public class PlayerPalmate : MonoBehaviour
         }
     }
 
-    //時間計測
-    private void CountTime()
-    {
-        countTime += Time.deltaTime;
-        if (countTime >= 1.0f)
-        {
-            --gameTime;
-            countTime = 0.0f;
-            //10秒単位の計算(トータルのゲーム時間/10(小数点以下は切り捨て))
-            imageNumber[1].sprite = numberImage[gameTime / 10];
-            //1秒単位の計算(トータルのゲーム時間ー10秒単位の数値＊10)
-            int secondTimer = gameTime - ((gameTime / 10) * 10);
-            imageNumber[0].sprite = numberImage[secondTimer];
-            if(gameTime <= 0)
-            {
-                gm.UpdateRanking(_score);
-            }
-        }
-        //if(doPoworUp)
-        //{
-
-        //}
-    }
-
-    //BGMプレイ
-    private void PlayBGM()
-    {
-        if (gameTime >= 20 && gameTime <= 60)
-        {
-            PlayBGM(beginBGM);
-        }
-        if (gameTime < 20)
-        {
-            PlayBGM(lastBGM);
-        }
-    }
-
     //牛のスコア処理
     void GetCow(int count)
     {
-        //フィーバー中のスコア計算
-        //if(doPoworUp) _score += (int)(score + score * 0.5);
-        //デバフ付与中のスコア計算
-        //if(doPoworDwon) _score += (int)(score - score * 0.3);
-
-        //通常のスコア加算
-        //タップで終わらせている時
-        if(count == 1)
-        {
-            _score += cowScore;
-        }
-        //つなげている状態
-        if(count >= 2)
-        {
-            _score += cowScore * count + (int)((cowScore * count) * 0.1);
-        }
-        
-        sm.UpdateScore(_score);
+        sm.AddScore(cowScore, chainCount);
         //チェイン数を初期化
         chainCount = 0;
     }
@@ -374,19 +244,7 @@ public class PlayerPalmate : MonoBehaviour
     //ネズミのスコア加算
     void GetMouse(int count)
     {
-        //通常のスコア加算
-        //タップで終わらせている時
-        if (count == 1)
-        {
-            _score += mouseScore;
-        }
-        //つなげている状態
-        if (count >= 2)
-        {
-            _score += mouseScore * count + (int)((mouseScore * count) * 0.1);
-        }
-
-        sm.UpdateScore(_score);
+        sm.AddScore(mouseScore, chainCount);
         //チェイン数を初期化
         chainCount = 0;
     }
@@ -421,18 +279,6 @@ public class PlayerPalmate : MonoBehaviour
     private void DoPowerDown()
     {
         StartCoroutine(PowerDownTime());
-    }
-
-    //メニュー中
-    public void PlayOpenMenu()
-    {
-        openMenu = true;
-    }
-
-    //メニューからゲームに戻る
-    public void BackGameFromMenu()
-    {
-        openMenu = false;
     }
 
     private IEnumerator ActiveEffect()

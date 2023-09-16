@@ -4,54 +4,59 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class uiManager : MonoBehaviour
+namespace GameManeger
 {
-    //GameManager
-    private GameManager gm;
-    //表示するUI
-    //今回はボタンの操作をuiManagerに任せるためにSetActiveによる
-    //表示の操作とする。
-    [SerializeField] private GameObject pauseUI;
-    //
-    [SerializeField] private PlayerPalmate pp;
-
-    void Start()
+    public class uiManager : MonoBehaviour
     {
-        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-        //UI表示の初期化
-        pauseUI.SetActive(false);
-    }
+        //GameManager
+        private GameManager gm;
+        //表示するUI
+        //今回はボタンの操作をuiManagerに任せるためにSetActiveによる
+        //表示の操作とする。
+        [SerializeField] private GameObject pauseUI;
+        //TimeManager
+        [SerializeField] private TimeManager tm;
 
-    //ポーズUIの表示
-    public void OpenPauseUI()
-    {
-        Debug.Log("開く");
-        pauseUI.SetActive(true);
-        Time.timeScale = 0f;
-        pp.OpenMenu = true;
-    }
+        void Start()
+        {
+            gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+            //UI表示の初期化
+            pauseUI.SetActive(false);
+        }
 
-    //ゲーム再開
-    public void BackGame()
-    {
-        Debug.Log("閉じる");
-        pauseUI.SetActive(false);
-        Time.timeScale = 1.0f;
-        pp.OpenMenu = false;
-    }
+        //ポーズUIの表示
+        public void OpenPauseUI()
+        {
+            Debug.Log("開く");
+            pauseUI.SetActive(true);
+            Time.timeScale = 0f;
+            tm.DoCount = false;
+        }
 
-    //タイトルへ
-    public void GoTitle()
-    {
-        gm.PlayerScore = 0;
-        SceneManager.LoadScene("TITLE");
-    }
+        //ゲーム再開
+        public void BackGame()
+        {
+            Debug.Log("閉じる");
+            pauseUI.SetActive(false);
+            Time.timeScale = 1.0f;
+            tm.DoCount = true;
+        }
 
-    //リトライ
-    public void LoadGame()
-    {
-        gm.PlayerScore = 0;
-        SceneManager.LoadScene("GameScene");
+        //タイトルへ
+        public void GoTitle()
+        {
+            gm.PlayerScore = 0;
+            SceneManager.LoadScene("TITLE");
+        }
+
+        //リトライ
+        public void LoadGame()
+        {
+            gm.PlayerScore = 0;
+            SceneManager.LoadScene("GameScene");
+        }
+
     }
 
 }
+

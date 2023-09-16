@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameManeger;
 using Spine;
 using Spine.Unity;
 
@@ -12,8 +13,6 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private float powerdownSpeed;
     //チェイン中の動物の動き
     [SerializeField] private float slowSpeed;
-    //
-    [SerializeField] private float angleRange;
     //捕まえた判定
     private bool canGet = false;
     //出現が許可された動物かを判定するフラグ
@@ -24,6 +23,8 @@ public class AnimalController : MonoBehaviour
     private bool doTurn = false;
     //PlayerPlamate
     [SerializeField] private PlayerPalmate pp;
+    //TimeManager
+    [SerializeField] private TimeManager tm;
     //AnimalManager
     [SerializeField] private AnimalManager am;
     //SkeletonAnimation
@@ -32,8 +33,6 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private Color changeColor;
     //元の色
     [SerializeField] private Color normalColor;
-    //原点
-    [SerializeField] private GameObject originObject;
 
     public enum DoMove
     {
@@ -83,7 +82,7 @@ public class AnimalController : MonoBehaviour
     private void CheckGame()
     {
         //ゲーム開始時点またはフィーバー演出中なら
-        if (pp.DontStart && pp.OpenMenu)
+        if (tm.DoCount)
         {
             StopAnimal();
         }
@@ -107,7 +106,7 @@ public class AnimalController : MonoBehaviour
         }
 
         //上記の状態以外の状態なら
-        if ((canMove == DoMove.OK || canMove == DoMove.SLOW) && !pp.OpenMenu)
+        if ((canMove == DoMove.OK || canMove == DoMove.SLOW) && tm.DoCount)
         {
             MoveAnimal();
             //Debug.Log("動いている");
