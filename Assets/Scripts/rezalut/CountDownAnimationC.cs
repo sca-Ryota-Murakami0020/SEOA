@@ -19,14 +19,16 @@ namespace GameManeger
         }
 
         //ゲームをプレイ可能状態にする
-        public void FinishStartCountDownAnimation()
+        public void FinishStartCountDown()
         {
             tm.DoCount = true;
+            
         }
 
         //ゲームを終了状態にする
         private void EndGame()
         {
+            //Debug.Log("aaaaaaaaaa");
             tm.DoCount = false;
         }
 

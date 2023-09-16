@@ -70,7 +70,6 @@ public class AnimalManager : MonoBehaviour
             sponeAnimal.transform.position = sponerObject[count].transform.position;
             sponeAnimal.transform.rotation = sponerObject[count].transform.rotation;
             AnimalController an = sponeAnimal.GetComponent<AnimalController>();
-            an.SelectFlag = true;
             an.ResetPar();
         }
     }
@@ -81,9 +80,6 @@ public class AnimalManager : MonoBehaviour
         //getAnimals.Enqueue(animal);
         AnimalController an = animal.gameObject.GetComponent<AnimalController>();
         animal.transform.position = this.transform.position;
-        //an.RenderFlag = false;
-        an.CanGet = false;
-        an.SelectFlag = false; 
         an.StopAnimal();
         //Debug.Log(animal);
         //Šl“¾ƒŠƒXƒg‚Ì––’[‚ÉŠl“¾‚µ‚½“®•¨‚ð“ü‚ê‚é

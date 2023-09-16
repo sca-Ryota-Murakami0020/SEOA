@@ -132,7 +132,6 @@ public class PlayerPalmate : MonoBehaviour
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-        sm = GameObject.Find("Scorecounter").GetComponent<scoreManager>();
         audios = GetComponent<AudioSource>();
     }
 
@@ -154,6 +153,7 @@ public class PlayerPalmate : MonoBehaviour
                 //if(getRum) DoPowerDown();
                 StartCoroutine(ActiveEffect());
             }
+            Debug.Log("プレイヤー側" + tm.DoCount);
         }
     }
 
@@ -233,22 +233,6 @@ public class PlayerPalmate : MonoBehaviour
         }
     }
 
-    //牛のスコア処理
-    void GetCow(int count)
-    {
-        sm.AddScore(cowScore, chainCount);
-        //チェイン数を初期化
-        chainCount = 0;
-    }
-
-    //ネズミのスコア加算
-    void GetMouse(int count)
-    {
-        sm.AddScore(mouseScore, chainCount);
-        //チェイン数を初期化
-        chainCount = 0;
-    }
-
     //BGMや効果音を呼び出す関数
     public void PlayBGM(AudioClip clip)
     {
@@ -285,16 +269,18 @@ public class PlayerPalmate : MonoBehaviour
     {
         doSwaip = false;
         //スコア加算
-        //Debug.Log("chainCount" + chainCount);
+        //牛のカウント
         if(getAnimalName == GetAnimals.Cow)
         {
-            GetCow(chainCount);
+            sm.AddScore(cowScore, chainCount);
         }
+        //ネズミのカウント
         if(getAnimalName == GetAnimals.Mouse)
         {
-            GetMouse(chainCount);
+            sm.AddScore(mouseScore, chainCount);
         }
-        
+        //繋げた数を初期化
+        chainCount = 0;
         //エフェクトを呼び出すオブジェクトの数が0になるまで行う
         while (animalInfo.Count != 0)
         {

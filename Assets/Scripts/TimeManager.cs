@@ -59,6 +59,7 @@ namespace GameManeger
                 CountTimer();
                 PlayBGM();
             }
+            Debug.Log("タイマー側:" + doCount);
         }
 
         //時間計測

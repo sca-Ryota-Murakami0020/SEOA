@@ -16,7 +16,7 @@ public class AnimalController : MonoBehaviour
     //捕まえた判定
     private bool canGet = false;
     //出現が許可された動物かを判定するフラグ
-    private bool selectFag = false;
+    private bool selectFag;
     //待機時間
     private float waitTime = 0.0f;
     //回転中
@@ -44,6 +44,7 @@ public class AnimalController : MonoBehaviour
 
     DoMove canMove = DoMove.NULL;
 
+    #region//プロパティ
     public bool CanGet
     {
         get { return this.canGet;}
@@ -66,6 +67,7 @@ public class AnimalController : MonoBehaviour
     {
         CheckMove();
     }
+    #endregion
 
     //状態管理
     private void CheckMove()
@@ -74,19 +76,14 @@ public class AnimalController : MonoBehaviour
         if(this.selectFag)
         {
             //状況判断関数
-            CheckGame();  
+            CheckGame();
+            //Debug.Log(tm.DoCount);
         }       
     }
 
     //ゲームの状態に応じた処理を行う関数
     private void CheckGame()
-    {
-        //ゲーム開始時点またはフィーバー演出中なら
-        if (tm.DoCount)
-        {
-            StopAnimal();
-        }
-
+    {     
         //プレイヤーがスワイプ中なら
         if (pp.DoChain)
         {
@@ -104,12 +101,20 @@ public class AnimalController : MonoBehaviour
         {
             ChangeColor();
         }
-
+        
         //上記の状態以外の状態なら
-        if ((canMove == DoMove.OK || canMove == DoMove.SLOW) && tm.DoCount)
+        if (canMove != DoMove.NOT && tm.DoCount)
         {
             MoveAnimal();
-            //Debug.Log("動いている");
+            Debug.Log("動いているフラグ:" + tm.DoCount);
+
+            //フィーバー演出中orポーズ中なら
+            if (!tm.DoCount)
+            {
+                StopAnimal();
+                Debug.Log("入った");
+                Debug.Log("フラグ:" + tm.DoCount);
+            }
         }
     }
 
@@ -195,7 +200,9 @@ public class AnimalController : MonoBehaviour
     {
         this.canMove = DoMove.OK;
         this.canGet = true;
+        this.selectFag = true;
         this.sa.skeleton.SetColor(normalColor);
+        //Debug.Log("変更は欠けたよ");
     }
 
     //行動停止時にする処理
