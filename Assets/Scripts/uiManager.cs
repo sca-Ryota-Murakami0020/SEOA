@@ -30,7 +30,7 @@ namespace GameManeger
             Debug.Log("開く");
             pauseUI.SetActive(true);
             Time.timeScale = 0f;
-            tm.DoCount = false;
+            tm.NoActiveDoCount();
         }
 
         //ゲーム再開
@@ -39,7 +39,7 @@ namespace GameManeger
             Debug.Log("閉じる");
             pauseUI.SetActive(false);
             Time.timeScale = 1.0f;
-            tm.DoCount = true;
+            tm.ActiveDoCount();
         }
 
         //タイトルへ

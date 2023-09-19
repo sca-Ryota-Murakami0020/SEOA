@@ -6,10 +6,11 @@ namespace GameManeger
 {
     public class CountDownAnimationC : MonoBehaviour
     {
+        //TimeManager
         [SerializeField] private TimeManager tm;
-
+        //AnimalManager
         [SerializeField] private AnimalManager am;
-
+        //アニメーションを流すImage
         [SerializeField] private Animator ani;
 
         //動物を初期位置に設置する
@@ -21,14 +22,13 @@ namespace GameManeger
         //ゲームをプレイ可能状態にする
         public void FinishStartCountDown()
         {
-            tm.DoCount = true;
+            tm.ActiveDoCount();
         }
 
         //ゲームを終了状態にする
         private void EndGame()
         {
-            //Debug.Log("aaaaaaaaaa");
-            tm.DoCount = false;
+            tm.NoActiveDoCount();
         }
 
         //カウントダウン用のImageを非表示にする

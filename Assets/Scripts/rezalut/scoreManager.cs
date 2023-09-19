@@ -119,6 +119,7 @@ namespace GameManeger
             }
         }
 
+        //ÉXÉRÉAâ¡éZ
         public void AddScore(int score, int count)
         {
             oldScore = _score;

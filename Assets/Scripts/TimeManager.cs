@@ -38,12 +38,14 @@ namespace GameManeger
         [SerializeField] private AudioClip lastBGM;
 
         //アニメーションを流すためのもの
-        [SerializeField]private CountDownAnimationC cc;
+        [SerializeField] private CountDownAnimationC cc;
+
+        //FeberC
+        [SerializeField] private FeberC fc;
 
         public bool DoCount
         {
             get { return this.doCount;}
-            set { this.doCount = value;}
         }
 
         // Start is called before the first frame update
@@ -107,6 +109,18 @@ namespace GameManeger
         {
             if (audios != null)
                 audios.PlayOneShot(clip);
+        }
+
+        //計測開始
+        public void ActiveDoCount()
+        {
+            doCount = true;
+        }
+
+        //計測中止
+        public void NoActiveDoCount()
+        {
+            doCount = false;
         }
 
         //カウントダウン用のImageを表示
