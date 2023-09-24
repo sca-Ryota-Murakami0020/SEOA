@@ -10,6 +10,8 @@ namespace GameManeger
         [SerializeField] private TimeManager tm;
         //AnimalManager
         [SerializeField] private AnimalManager am;
+        //ActiveManager
+        [SerializeField] private ActiveManager activeManager;
         //アニメーションを流すImage
         [SerializeField] private Animator ani;
 
@@ -34,7 +36,7 @@ namespace GameManeger
         //カウントダウン用のImageを非表示にする
         public void CloseCount()
         {
-            tm.CloseCountDown();
+            activeManager.CloseCountDown();
         }
 
         //最初のカウントダウンを起動

@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameManeger;
+using UnityEditor;
 using Spine;
 using Spine.Unity;
+using GameManeger;
 
-public class AnimalController : MonoBehaviour
+public class FiverAnimalC : MonoBehaviour
 {
     //動物のスピード
     [SerializeField] private float normalSpeed;
@@ -25,8 +26,8 @@ public class AnimalController : MonoBehaviour
     [SerializeField] private PlayerPalmate pp;
     //TimeManager
     [SerializeField] private TimeManager tm;
-    //AnimalManager
-    [SerializeField] private AnimalManager am;
+    //FiverAnimalMAnager
+    [SerializeField] private FiverAnimalManager fiverAM;
     //SkeletonAnimation
     [SerializeField] private SkeletonAnimation sa;
     //タッチしたときに発光する色
@@ -51,20 +52,20 @@ public class AnimalController : MonoBehaviour
     #region//プロパティ
     public bool CanGet
     {
-        get { return this.canGet;}
-        set { this.canGet = value;}
+        get { return this.canGet; }
+        set { this.canGet = value; }
     }
 
     public bool SelectFlag
     {
-        get { return this.selectFag;}
-        set { this.selectFag = value;}
+        get { return this.selectFag; }
+        set { this.selectFag = value; }
     }
 
     public DoMove Move
     {
-        get { return this.canMove;}
-        set { this.canMove = value;}
+        get { return this.canMove; }
+        set { this.canMove = value; }
     }
 
     private void Update()
@@ -77,14 +78,13 @@ public class AnimalController : MonoBehaviour
     private void CheckMove()
     {
         //出現が許可されているオブジェクトであるなら
-        if(this.selectFag)
+        if (this.selectFag)
         {
             //状況判断関数
             CheckGame();
             //Debug.Log(tm.DoCount);
         }
-
-        if (!this.selectFag)
+        if(!this.selectFag)
         {
             NoActiveisTriggerAnimal();
         }
@@ -92,7 +92,7 @@ public class AnimalController : MonoBehaviour
 
     //ゲームの状態に応じた処理を行う関数
     private void CheckGame()
-    {     
+    {
         //プレイヤーがスワイプ中なら
         if (pp.DoChain)
         {
@@ -100,17 +100,17 @@ public class AnimalController : MonoBehaviour
         }
 
         //プレイヤーが繋げていない状態であり、自身がゲーム内に出ることが許可されている個体なら
-        if(!pp.DoChain && this.selectFag)
+        if (!pp.DoChain && this.selectFag)
         {
             this.canMove = DoMove.OK;
         }
 
         //捕まっている状態なら
-        if(!this.canGet)
+        if (!this.canGet)
         {
             ChangeColor();
         }
-        
+
         //上記の状態以外の状態なら
         if (canMove != DoMove.NOT && tm.DoCount)
         {
@@ -131,34 +131,39 @@ public class AnimalController : MonoBehaviour
         {
             ActiveisTriggerAnimal();
         }
-
-        if (collision.gameObject.CompareTag("car") && this.selectFag)
-        {
-            //Debug.Log("弾かれた");
-            am.ReturnAnimal(this.gameObject);
-        }
     }
 
-    
+    //当たり判定
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //進行方向に動物がいれば
-        if((collision.gameObject.CompareTag("plusAngle")||collision.gameObject.CompareTag("animal"))
+        //進行方向に動物がいれば当たり判定を消す
+        if ((collision.gameObject.CompareTag("plusAngle") || collision.gameObject.CompareTag("animal"))
             && this.selectFag && !doTurn)
         {
             NoActiveisTriggerAnimal();
         }
     }
 
-    //削除処理
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if(collision.gameObject.CompareTag("OutStage") && this.selectFag)
+        //ステージ外に向かっていたら
+        if (collision.gameObject.CompareTag("OutStage") && this.selectFag)
         {
-            am.BackAnimalList(this.gameObject);
+            string animalName = LayerMask.LayerToName(this.gameObject.layer);
+            //このオブジェクトのレイヤーが牛なら
+            if(animalName == LayerMask.LayerToName(6))
+            {
+                fiverAM.RuteruListCow(this.gameObject);
+            }
+            //このオブジェクトのレイヤーがネズミなら
+            if (animalName == LayerMask.LayerToName(7))
+            {
+                fiverAM.ReturnListMouse(this.gameObject);
+            }
         }
+
         //動物同士がすり抜けあっていたら
-        if (collision.gameObject.CompareTag("animal") && this.selectFag)
+        if(collision.gameObject.CompareTag("animal") && this.selectFag)
         {
             ActiveisTriggerAnimal();
         }
@@ -169,7 +174,7 @@ public class AnimalController : MonoBehaviour
     {
         //ローカル変数
         float localSpeed = 0.0f;
-      
+
         //プレイヤーがラム酒を取った場合
         if (pp.PlayerSituation == PlayerPalmate.PlayerState.POWERDOWN)
         {
@@ -211,7 +216,7 @@ public class AnimalController : MonoBehaviour
     public void NoActiveisTriggerAnimal()
     {
         animalCollider2d.isTrigger = false;
-        rb2d.isKinematic = true;
+        rb2d.isKinematic = false;
     }
 
     //スポナーに設置されている動物を動かすために各パラメーターを初期化する
@@ -234,47 +239,4 @@ public class AnimalController : MonoBehaviour
 
     //ここはgetFlagのみをfalseにしたい時に使う関数
     public void NotGet() => this.canGet = false;
-
-    /*
-    //旋回行動
-    private IEnumerator TurnAnimalAction()
-    {
-        //スピードを変更する（減速）
-        this.canMove = DoMove.SLOW;
-        doTurn = true;
-        //追加する角度をランダムで決定する
-        float randomNum = Random.Range(1, 2);
-        bool pulsRad = false;
-        if (randomNum % 2 == 0) pulsRad = true;
-        if (randomNum % 2 != 0) pulsRad = false;
-        //回転を変数化
-        Quaternion animalAngle = this.transform.rotation;
-        //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
-        int countRad = 0;
-        float addRad = 1.0f;
-        
-        while(countRad < 120)
-        {
-            if(pulsRad)
-            {
-                //animalAngle.z += addRad;
-                //this.transform.rotation = Quaternion.AngleAxis(addRad, this.transform.forward);Space.Self)
-                transform.Rotate(0, 0, addRad);
-            }
-            if(!pulsRad)
-            {
-                //animalAngle.z -= addRad;
-                //this.transform.rotation = Quaternion.AngleAxis(-addRad, this.transform.forward);
-                transform.Rotate(0, 0, -addRad);
-            }
-            //this.transform.rotation = animalAngle;
-            countRad ++;
-            yield return new WaitForEndOfFrame();
-        }
-
-        //スピードを元の数値に直す
-        this.canMove = DoMove.OK;
-        doTurn = false;
-        yield break;
-    }*/
 }

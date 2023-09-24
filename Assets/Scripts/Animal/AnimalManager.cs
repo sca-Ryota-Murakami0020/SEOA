@@ -55,7 +55,7 @@ public class AnimalManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     { 
-        
+    
     }
 
     #region//関数
@@ -77,7 +77,6 @@ public class AnimalManager : MonoBehaviour
     //配置する動物の格納順の更新
     public void SponeAnimal(GameObject animal)
     {       
-        //getAnimals.Enqueue(animal);
         AnimalController an = animal.gameObject.GetComponent<AnimalController>();
         animal.transform.position = this.transform.position;
         an.StopAnimal();
@@ -88,8 +87,8 @@ public class AnimalManager : MonoBehaviour
         StartCoroutine(SponeAnimalActive(animal));
     }
 
-    // 
-    public void ResetEnemyPar()
+    /*
+    public void ResetAnimalPar()
     {
         for(int count = 0; count < animalIndex.Count; count++)
         {
@@ -101,7 +100,7 @@ public class AnimalManager : MonoBehaviour
                 Debug.Log("関数呼び出し");
             }
         }
-    }
+    }*/
 
     //捕まえた時に行う動物の処理
     public void ReturnAnimal(GameObject setAnimal)

@@ -7,22 +7,21 @@ namespace GameManeger
 {
     public class TimeManager : MonoBehaviour
     {
+        //ActiveManager
+        [SerializeField] private ActiveManager activeManager;
+
         //計測中かの判定
         private bool doCount = false;
-        //始めのカウントダウンを終了したかの判定
-        private bool endStartCount = false;
         //ラストカウントダウンを開始したか
         private bool startEndCount = false;
+        //フィーバーしているか
+        private bool doingFiver = false;
         //ゲーム時間(画像で数字の表示をおこなうため、整数型の方が実装しやすいから)
         private int gameTime = 60;
-        //表示する画像の番地数を格納する変数
-        private int spriteCount;
         //細かい時間経過をおこなうために用いる小数型の変数
         private float countTime = 0.0f;
         //Audiosource
         private AudioSource audios = null;
-        //カウント表示
-        [SerializeField] private GameObject countImage;
 
         //数字のイメージ
         [Header("表示する数字のImage")]
@@ -37,22 +36,54 @@ namespace GameManeger
         //ラストスパートBGＭ
         [SerializeField] private AudioClip lastBGM;
 
-        //アニメーションを流すためのもの
-        [SerializeField] private CountDownAnimationC cc;
+        #region//カレー関係
+        //CurryMoveC
+        [SerializeField] private CurryMoverC cm;
+        //]
+        [SerializeField] private FiverAnimalManager fam;
 
-        //FeberC
-        [SerializeField] private FeberC fc;
+        //カレーの待機時間
+        private int cuuryWaitTime = 0;
+        //カレーによる強化時間
+        [SerializeField] private int powerUpTime;
+        //実施に時間を計測する変数
+        private int countBufTime;
+        //最短時間間隔
+        [SerializeField] private int minCurrySponeTime;
+        //最長時間間隔
+        [SerializeField] private int maxCurrySponeTime;
+        #endregion
+
+        #region//ラム酒関係
+        //デバフ影響時間
+        [SerializeField] private int powerDownTime;
+        //実施に時間を計測する変数
+        private int countDebufTime;
+        #endregion
 
         public bool DoCount
         {
             get { return this.doCount;}
         }
 
+        public bool DoingFiver
+        {
+            get { return this.doingFiver;}
+        }
+
         // Start is called before the first frame update
         void Start()
         {
+            //初期化
+            countBufTime = powerUpTime;
+            countDebufTime = powerDownTime;
+
             //最初のカウントダウンの開始
-            cc.ActiveStartCountAnimation();
+            activeManager.StartBeginCountDown();
+            //カレーの出現時間を設定する
+            ResetCurryTime();
+            //フィーバー用のImageを非表示にする
+            activeManager.NoActiveFiverImage();
         }
 
         // Update is called once per frame
@@ -65,14 +96,28 @@ namespace GameManeger
             }
         }
 
+        #region//計測関係（フラグ込み）
         //時間計測
         private void CountTimer()
         {
             countTime += Time.deltaTime;
             if (countTime >= 1.0f)
             {
+                //ゲーム時間の減少
                 --gameTime;
-                countTime = 0.0f;
+                //カレーが初期位置にいたなら
+                if (!cm.CanMove)
+                {
+                    CountCurryWaitTime();
+                }
+                //計測用の変数を更新
+                countTime = 0.0f;               
+                //フィーバー中なら
+                if (doingFiver)
+                {
+                    Fiver();
+                }
+
                 //10秒単位の計算(トータルのゲーム時間/10(小数点以下は切り捨て))
                 imageNumber[1].sprite = numberImage[gameTime / 10];
                 //1秒単位の計算(トータルのゲーム時間ー10秒単位の数値＊10)
@@ -81,34 +126,14 @@ namespace GameManeger
                 //終了5秒前のアニメーションを呼び出す
                 if (gameTime <= 5 && !startEndCount)
                 {
-                    ShowCountDown();
-                    cc.ActiveEndCountAnimation();
+                    //終了アニメーションが流れたことにする
+                    startEndCount = true;
+                    //アニメーション用のImageを呼び出す
+                    activeManager.ShowCountDown();
+                    //対象のアニメーションを表示する
+                    activeManager.StartEndCountDown();
                 }
             }
-            //if(doPoworUp)
-            //{
-
-            //}
-        }
-
-        //BGMプレイ
-        private void PlayBGM()
-        {
-            if (gameTime >= 20 && gameTime <= 60)
-            {
-                PlayBGM(beginBGM);
-            }
-            if (gameTime < 20)
-            {
-                PlayBGM(lastBGM);
-            }
-        }
-
-        //BGMや効果音を呼び出す関数
-        public void PlayBGM(AudioClip clip)
-        {
-            if (audios != null)
-                audios.PlayOneShot(clip);
         }
 
         //計測開始
@@ -123,18 +148,76 @@ namespace GameManeger
             doCount = false;
         }
 
-        //カウントダウン用のImageを表示
-        public void ShowCountDown()
+        //カレーの待機時間を計測
+        private void CountCurryWaitTime()
         {
-            countImage.SetActive(true);
+            //カレーの待機時間を減少する
+            --cuuryWaitTime;
+            //カレーの待機時間が0になったら
+            if (cuuryWaitTime <= 0)
+            {
+                //カレーの配置
+                cm.SetCurry();
+                //カレーの待機時間をリセット
+                ResetCurryTime();
+            }
         }
 
-        //カウントダウン用のImageを非表示に
-        public void CloseCountDown()
+        #endregion
+
+        #region//音響
+        //BGMプレイ
+        private void PlayBGM()
         {
-            Debug.Log("呼び出し");
-            countImage.SetActive(false);
+            if (gameTime >= 20 && gameTime <= 60)
+            {
+                PlayBGM(beginBGM);
+            }
+            if (gameTime < 20)
+            {
+                PlayBGM(lastBGM);
+            }
+        }
+
+        //BGMや効果音を呼び出す関数
+        private void PlayBGM(AudioClip clip)
+        {
+            if (audios != null)
+                audios.PlayOneShot(clip);
+        }
+        #endregion
+
+        #region//フィーバー関係
+        //フィーバー時間の計測
+        private void Fiver()
+        {
+            --countBufTime;
+            //フィーバー時間が終了したら
+            if (countBufTime <= 0)
+            {
+                //フィーバー中を解除
+                doingFiver = false;
+                fam.NoActiveFiver();
+                //初期化
+                countBufTime = powerUpTime;
+            }
+        }
+
+        //フィーバー中にする
+        public void ActiveFiverTime()
+        {
+            Debug.Log("kaisi");
+            //フィーバー中にする
+            doingFiver = true;
+            fam.ActiveFiver();
+        }
+
+        //カレーの時間間隔を設定する
+        public void ResetCurryTime()
+        {
+            cuuryWaitTime = Random.Range(minCurrySponeTime,maxCurrySponeTime);
+            //Debug.Log(cuuryWaitTime);
         }
     }
+    #endregion
 }
-

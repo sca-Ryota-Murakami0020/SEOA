@@ -48,8 +48,8 @@ namespace GameManeger
         private void FixedUpdate()
         {
             UpdateScore();
-            Debug.Log("スコア：" + _score);
-            Debug.Log("OldScore：" + oldScore);
+            //Debug.Log("スコア：" + _score);
+            //Debug.Log("OldScore：" + oldScore);
         }
 
         /*

@@ -16,6 +16,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 3110883383643689804}
     - target: {fileID: -8068448458600205544, guid: a82318d78849c8449b9eb712e797be10, type: 3}
+      propertyPath: rb2d
+      value: 
+      objectReference: {fileID: -5095186360178534343}
+    - target: {fileID: -8068448458600205544, guid: a82318d78849c8449b9eb712e797be10, type: 3}
       propertyPath: slowSpeed
       value: 0.1
       objectReference: {fileID: 0}
@@ -71,6 +75,10 @@ PrefabInstance:
       propertyPath: powerdownSpeed
       value: 0.09
       objectReference: {fileID: 0}
+    - target: {fileID: -8068448458600205544, guid: a82318d78849c8449b9eb712e797be10, type: 3}
+      propertyPath: animalCollider2d
+      value: 
+      objectReference: {fileID: 7443821973333124934}
     - target: {fileID: 1211679807092867054, guid: a82318d78849c8449b9eb712e797be10, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -78,6 +86,10 @@ PrefabInstance:
     - target: {fileID: 1600280263125122188, guid: a82318d78849c8449b9eb712e797be10, type: 3}
       propertyPath: _animationName
       value: animation
+      objectReference: {fileID: 0}
+    - target: {fileID: 1845686863892954112, guid: a82318d78849c8449b9eb712e797be10, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2303538039385241879, guid: a82318d78849c8449b9eb712e797be10, type: 3}
       propertyPath: m_LocalPosition.x
@@ -159,6 +171,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mouse
       objectReference: {fileID: 0}
+    - target: {fileID: 6508969449459009670, guid: a82318d78849c8449b9eb712e797be10, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5222126207587937614, guid: a82318d78849c8449b9eb712e797be10, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a82318d78849c8449b9eb712e797be10, type: 3}
@@ -178,6 +194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!61 &7443821973333124934 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 6508969449459009670, guid: a82318d78849c8449b9eb712e797be10, type: 3}
+  m_PrefabInstance: {fileID: 4402626660925140928}
+  m_PrefabAsset: {fileID: 0}
 --- !u!50 &-5095186360178534343
 Rigidbody2D:
   serializedVersion: 4

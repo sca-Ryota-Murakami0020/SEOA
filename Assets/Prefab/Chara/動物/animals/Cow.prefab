@@ -11,6 +11,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 2215441494257766069, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3354972083489757343, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: zSpacing
       value: 0
@@ -84,6 +88,10 @@ PrefabInstance:
       value: 4.79
       objectReference: {fileID: 0}
     - target: {fileID: 7246491873195781026, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7246491873195781026, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
       objectReference: {fileID: 0}
@@ -133,6 +141,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!61 &7435424727247300766 stripped
+BoxCollider2D:
+  m_CorrespondingSourceObject: {fileID: 2215441494257766069, guid: ce110851111a95b43a03e692bd07dee3, type: 3}
+  m_PrefabInstance: {fileID: 8759847793203226155}
+  m_PrefabAsset: {fileID: 0}
 --- !u!50 &5660543773927143831
 Rigidbody2D:
   serializedVersion: 4
@@ -169,10 +182,11 @@ MonoBehaviour:
   normalSpeed: 0.06
   powerdownSpeed: 0.02
   slowSpeed: 0.1
-  angleRange: 0.2
   pp: {fileID: 0}
+  tm: {fileID: 0}
   am: {fileID: 0}
   sa: {fileID: 6277589610635493044}
   changeColor: {r: 0.5283019, g: 0.50537556, b: 0.50537556, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
-  originObject: {fileID: 0}
+  animalCollider2d: {fileID: 7435424727247300766}
+  rb2d: {fileID: 5660543773927143831}

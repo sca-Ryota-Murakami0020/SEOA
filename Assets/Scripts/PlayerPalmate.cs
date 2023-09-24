@@ -9,34 +9,27 @@ public class PlayerPalmate : MonoBehaviour
 {
     #region//参照するスクリプト
     //scoreManager
-    [SerializeField] private scoreManager sm;
+    [SerializeField] private scoreManager scoreManager;
     //TimeManager
-    [SerializeField] private TimeManager tm;
+    [SerializeField] private TimeManager timeManager;
     //GameManager
-    [SerializeField] private GameManager gm;
+    [SerializeField] private GameManager gameManager;
     //Audiosource
     private AudioSource audios = null;
     //AnimalManager
-    [SerializeField]private AnimalManager am;
+    [SerializeField] private AnimalManager animalManager;
+    //FiverAnimalManager
+    [SerializeField] private FiverAnimalManager fiverAnimalManager;
+    //ActiveManager
+    [SerializeField] private ActiveManager activeManager;
     //エフェクト
     [Header("呼び出すエフェクト")] [SerializeField]
     private effectsC[] effect;
-    
-    //カウントダウン演出用アニメーション
-    //[Header("カウントダウンアニメーション")][SerializeField]
-    //private Animation countDwonAnim;
-    //feberC
-    //[Header("フィーバー演出関係を管理するスクリプト")][SerializeField]
-    //private feberC fc;
     #endregion
 
     #region//変数
     //スワイプ中かの判定
-    private bool doSwaip;
-    //カレーを取得し、バフを受けている様態
-    private bool doPoworUp;
-    //ラム酒を取得し、デバフを受けている状態
-    private bool doPoworDwon;
+    private bool doSwaip = false;
     //カレーを取得した場合
     private bool getCurry = false;
     //ラム酒を取得した場合
@@ -47,8 +40,10 @@ public class PlayerPalmate : MonoBehaviour
     private int effectCount = 0;
     //つなげた数
     private int chainCount = 0;
-    //獲得した
+    //獲得した動物
     private Queue<GameObject> animalInfo = new Queue<GameObject>();
+    //フィーバー中に獲得した動物
+    private Queue<GameObject> fiverAnimalInfo = new Queue<GameObject>();
     #endregion
 
     #region//インスペクターで変更する値
@@ -58,11 +53,6 @@ public class PlayerPalmate : MonoBehaviour
     [SerializeField] private int mouseScore;
     //エフェクト出現間隔時間
     [SerializeField] private float waitEffectTime;
-    //パワーアップ時間
-    [SerializeField] private float powerupTime;
-    //パワーダウン時間
-    [SerializeField] private float powerdownTime;
-    
     #endregion
 
     #region//クラス
@@ -93,9 +83,6 @@ public class PlayerPalmate : MonoBehaviour
     [SerializeField] private AudioClip mouseSE;
     //タッチ音
     [SerializeField] private AudioClip touchSE;
-    //スワイプしたときにゲージが減る効果音
-    [SerializeField] private AudioClip gazeSE;
-
     #endregion
 
     #region//プロパティ
@@ -137,7 +124,7 @@ public class PlayerPalmate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(tm.DoCount)
+        if(timeManager.DoCount)
         {
             //操作
             if (Input.GetMouseButton(0))
@@ -147,10 +134,16 @@ public class PlayerPalmate : MonoBehaviour
             //マウスを離したor指を離した場合
             if (Input.GetMouseButtonUp(0))
             {
-                //スコアを格納したスクリプトをここで参照する
-                //if(getCurry) DoPowerUp();
-                //if(getRum) DoPowerDown();
-                StartCoroutine(ActiveEffect());
+                if(timeManager.DoingFiver)
+                {
+                    StartCoroutine(FiverActiveEffect());
+                }
+
+                else
+                {
+                    //スコアを格納したスクリプトをここで参照する
+                    StartCoroutine(ActiveEffect());
+                }
             }
         }
     }
@@ -166,6 +159,7 @@ public class PlayerPalmate : MonoBehaviour
             return;
         }
         
+        //通常の動物判定
         if (hit2d.collider.tag == "animal")
         {
             //Debug.Log("繋げてる");
@@ -190,18 +184,18 @@ public class PlayerPalmate : MonoBehaviour
             if (this.getAnimalName != GetAnimals.NULL && this.getAnimalName.ToString() == getAnimalName)
             {
                 //捕まえた動物の関数を取得する
-                AnimalController animalController = hit2d.collider.gameObject.GetComponent<AnimalController>();
-
+                //FiverAnimalC fiverAnimalC = hit2d.collider.gameObject.GetComponent<FiverAnimalC>();
+                AnimalController ac = hit2d.collider.gameObject.GetComponent<AnimalController>();
                 //同じ動物に当たってしまっていたら以降の処理はしない
-                if (!animalController.CanGet) return;
+                if (!ac.CanGet) return;
 
                 //もしつなげようとしている動物が一番最初の動物と同じ場合
-                if (animalController.CanGet)
+                if (ac.CanGet)
                 {
                     PlayBGM(touchSE);
                     //Debug.Log("色の変更開始");
-                    animalController.ChangeColor();
-                    animalController.NotGet();
+                    ac.ChangeColor();
+                    ac.NotGet();
                     //要素の末端に追加する
                     animalInfo.Enqueue(hit2d.collider.gameObject);                    
                     //つなげている数を更新
@@ -210,10 +204,55 @@ public class PlayerPalmate : MonoBehaviour
             }
         }
 
-        //触れたオブジェクトがアイテムなら
-        if(hit2d.collider.tag == "Item")
+        if(hit2d.collider.tag == "fiverAnimal")
         {
-            if(!doSwaip) doSwaip = true;
+            doSwaip = true;
+            //レイヤーマスクを獲得する
+            string getAnimalName = LayerMask.LayerToName(hit2d.collider.gameObject.layer);
+            //もし保持している名前が無かったら
+            if (this.getAnimalName == GetAnimals.NULL)
+            {
+                //最初のデータを牛に変更
+                if (getAnimalName == LayerMask.LayerToName(6))
+                {
+                    this.getAnimalName = GetAnimals.Cow;
+                }
+                //最初のデータをネズミに変更
+                if (getAnimalName == LayerMask.LayerToName(7))
+                {
+                    this.getAnimalName = GetAnimals.Mouse;
+                }
+            }
+
+            if (this.getAnimalName != GetAnimals.NULL && this.getAnimalName.ToString() == getAnimalName)
+            {
+                //捕まえた動物の関数を取得する
+                //AnimalController animalController = hit2d.collider.gameObject.GetComponent<AnimalController>();
+                FiverAnimalC fiverAnimalC = hit2d.collider.gameObject.GetComponent<FiverAnimalC>();
+
+                //同じ動物に当たってしまっていたら以降の処理はしない
+                if (!fiverAnimalC.CanGet) return;
+
+                //もしつなげようとしている動物が一番最初の動物と同じ場合
+                if (fiverAnimalC.CanGet)
+                {
+                    PlayBGM(touchSE);
+                    //Debug.Log("色の変更開始");
+                    fiverAnimalC.ChangeColor();
+                    fiverAnimalC.NotGet();
+                    //要素の末端に追加する
+                    fiverAnimalInfo.Enqueue(hit2d.collider.gameObject);
+                    //つなげている数を更新
+                    chainCount += 1;
+                }
+            }
+        }
+
+        //触れたオブジェクトがアイテムなら
+        if(hit2d.collider.tag == "item" && !timeManager.DoingFiver)
+        {
+            //if(!doSwaip) doSwaip = true;
+            //Debug.Log("つながっている");
             //レイヤーマスクを獲得する
             string getItemName = LayerMask.LayerToName(hit2d.collider.gameObject.layer);
             //ラム酒を取得した場合
@@ -245,22 +284,25 @@ public class PlayerPalmate : MonoBehaviour
         //つなげた数を増やす
         effectCount++;
         //要素の削除
-        am.SponeAnimal(animalInfo.Dequeue());
+        animalManager.SponeAnimal(animalInfo.Dequeue());
         //Debug.Log("処理完了");
         //ここで出力する個数が配列以上になったら0に戻し終了させる
         if (effect.Length == effectCount) effectCount = 0;
     }
 
-    //パワーアップ処理
-    private void DoPowerUp()
+    private void FiverEffect(GameObject getAnimal)
     {
-        StartCoroutine(PowerUpTime());
-    }
-
-    //パワーダウン処理
-    private void DoPowerDown()
-    {
-        StartCoroutine(PowerDownTime());
+        //
+        string animalName = LayerMask.LayerToName(getAnimal.gameObject.layer);
+        effect[effectCount].PlayEffect(getAnimal);
+        //つなげた数を増やす
+        effectCount++;
+        //要素の削除
+        if(animalName == LayerMask.LayerToName(6)) fiverAnimalManager.SponeCow(fiverAnimalInfo.Dequeue());
+        if(animalName == LayerMask.LayerToName(7)) fiverAnimalManager.SponeMouse(fiverAnimalInfo.Dequeue());
+        //Debug.Log("処理完了"); 
+        //ここで出力する個数が配列以上になったら0に戻し終了させる
+        if (effect.Length == effectCount) effectCount = 0;
     }
 
     private IEnumerator ActiveEffect()
@@ -270,12 +312,12 @@ public class PlayerPalmate : MonoBehaviour
         //牛のカウント
         if(getAnimalName == GetAnimals.Cow)
         {
-            sm.AddScore(cowScore, chainCount);
+            scoreManager.AddScore(cowScore, chainCount);
         }
         //ネズミのカウント
         if(getAnimalName == GetAnimals.Mouse)
         {
-            sm.AddScore(mouseScore, chainCount);
+            scoreManager.AddScore(mouseScore, chainCount);
         }
         //繋げた数を初期化
         chainCount = 0;
@@ -293,24 +335,47 @@ public class PlayerPalmate : MonoBehaviour
         //記憶する名前の初期化
         animalName = null;
         getAnimalName = GetAnimals.NULL;
+        //カレーを取得している場合
+        if(getCurry)
+        {
+            //フィーバータイムのアニメーションを動かす
+            activeManager.ActiveFiverTime();
+            getCurry = false;
+        }
         yield return null;
     }
 
-    //パワーアップ処理（指定秒数間行う処理）
-    private IEnumerator PowerUpTime()
+    //フィーバー用の処理
+    private IEnumerator FiverActiveEffect()
     {
-        playerState = PlayerState.POWERUP;
-        yield return new WaitForSeconds(powerupTime);
-        getCurry = false;
-        playerState = PlayerState.NULL;
-    }
-
-    //パワーダウン処理（指定秒数間行う処理）
-    private IEnumerator PowerDownTime()
-    {
-        playerState = PlayerState.POWERDOWN;
-        yield return new WaitForSeconds(powerdownTime);
-        getRum = false;
-        playerState = PlayerState.NULL;
+        doSwaip = false;
+        //スコア加算
+        //牛のカウント
+        if (getAnimalName == GetAnimals.Cow)
+        {
+            scoreManager.AddScore(cowScore, chainCount);
+        }
+        //ネズミのカウント
+        if (getAnimalName == GetAnimals.Mouse)
+        {
+            scoreManager.AddScore(mouseScore, chainCount);
+        }
+        //繋げた数を初期化
+        chainCount = 0;
+        //エフェクトを呼び出すオブジェクトの数が0になるまで行う
+        while (fiverAnimalInfo.Count != 0)
+        {
+            //エフェクト再生
+            //Debug.Log(animalInfo.Count);
+            FiverEffect(fiverAnimalInfo.Peek());
+            //動物に応じて呼び出す鳴き声を変更する
+            if (getAnimalName == GetAnimals.Cow) PlayBGM(cowSE);
+            if (getAnimalName == GetAnimals.Mouse) PlayBGM(mouseSE);
+            yield return new WaitForSeconds(waitEffectTime);
+        }
+        //記憶する名前の初期化
+        animalName = null;
+        getAnimalName = GetAnimals.NULL;
+        yield return null;
     }
 }
