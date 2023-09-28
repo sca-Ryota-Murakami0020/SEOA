@@ -153,6 +153,7 @@ public class AnimalController : MonoBehaviour
     //削除処理
     private void OnTriggerExit2D(Collider2D collision)
     {
+        //画面外に出た場合、リストの末端に戻る
         if(collision.gameObject.CompareTag("OutStage") && this.selectFag)
         {
             am.BackAnimalList(this.gameObject);
@@ -212,6 +213,7 @@ public class AnimalController : MonoBehaviour
     {
         animalCollider2d.isTrigger = false;
         rb2d.isKinematic = true;
+        //Debug.Log("当たり判定消滅");
     }
 
     //スポナーに設置されている動物を動かすために各パラメーターを初期化する
@@ -234,47 +236,4 @@ public class AnimalController : MonoBehaviour
 
     //ここはgetFlagのみをfalseにしたい時に使う関数
     public void NotGet() => this.canGet = false;
-
-    /*
-    //旋回行動
-    private IEnumerator TurnAnimalAction()
-    {
-        //スピードを変更する（減速）
-        this.canMove = DoMove.SLOW;
-        doTurn = true;
-        //追加する角度をランダムで決定する
-        float randomNum = Random.Range(1, 2);
-        bool pulsRad = false;
-        if (randomNum % 2 == 0) pulsRad = true;
-        if (randomNum % 2 != 0) pulsRad = false;
-        //回転を変数化
-        Quaternion animalAngle = this.transform.rotation;
-        //決定した角度を動物に付与する（接触するのは同じタグのオブジェクトなので、相手側の判定を行う必要はない）
-        int countRad = 0;
-        float addRad = 1.0f;
-        
-        while(countRad < 120)
-        {
-            if(pulsRad)
-            {
-                //animalAngle.z += addRad;
-                //this.transform.rotation = Quaternion.AngleAxis(addRad, this.transform.forward);Space.Self)
-                transform.Rotate(0, 0, addRad);
-            }
-            if(!pulsRad)
-            {
-                //animalAngle.z -= addRad;
-                //this.transform.rotation = Quaternion.AngleAxis(-addRad, this.transform.forward);
-                transform.Rotate(0, 0, -addRad);
-            }
-            //this.transform.rotation = animalAngle;
-            countRad ++;
-            yield return new WaitForEndOfFrame();
-        }
-
-        //スピードを元の数値に直す
-        this.canMove = DoMove.OK;
-        doTurn = false;
-        yield break;
-    }*/
 }

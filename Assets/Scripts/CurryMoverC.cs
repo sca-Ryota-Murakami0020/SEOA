@@ -72,6 +72,7 @@ public class CurryMoverC : MonoBehaviour
     public void NoActiveCanFlag()
     {
         canMove = false;
+        moveLeft = false;
     }
 
     //is•ûŒü‚ğ¶‚É‚·‚é

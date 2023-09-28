@@ -20,28 +20,6 @@ namespace GameManeger
         [SerializeField] private GameObject timeCountObject;
         //アニメーションを流すためのもの
         [SerializeField] private CountDownAnimationC countDowonC;
-        //ネズミのオブジェクトをまとめたオブジェクト
-        [SerializeField] private GameObject fiverMouseIndexObject;
-        //牛のオブジェクトをまとめたオブジェクト
-        [SerializeField] private GameObject fiverCowIndexObject;
-
-        public void ActiveFiverMouse()
-        {
-            fiverMouseIndexObject.SetActive(true);
-            fam.SetMouseIndex();
-            fam.MouseFiver();
-        }
-
-        public void ActiveFiverCow()
-        {
-            fiverCowIndexObject.SetActive(true);
-            fam.SetCowIndex();
-            fam.CowFiver();
-        }
-
-        public void NoActiveFiverMouse() => fiverMouseIndexObject.SetActive(false);
-
-        public void NoActiveFiverCow() => fiverCowIndexObject.SetActive(false);
 
         #region//フィーバー関係
         //フィーバー用のImageを表示する
@@ -66,6 +44,31 @@ namespace GameManeger
             fc.OpenSelectIcon();
         }
 
+        //牛のフィーバーを起動する
+        public void ActiveFiverMouse()
+        {
+            fam.SetMouseIndex();
+            fam.MouseFiver();
+        }
+
+        //ネズミのフィーバーを起動する
+        public void ActiveFiverCow()
+        {
+            fam.SetCowIndex();
+            fam.CowFiver();
+        }
+
+        //動物たちを呼び出す
+        public void ActiveFiverAnimals(GameObject animal)
+        {
+            animal.SetActive(true);
+        }
+
+        //動物たちを非表示にする
+        public void NoActiveFiverAnimals(GameObject animal)
+        {
+
+        }
         #endregion
 
         #region//カウントダウン関係

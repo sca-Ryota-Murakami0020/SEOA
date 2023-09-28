@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+//全ての関数はアニメーションで呼び出される
 namespace GameManeger
 {
     public class FiverC : MonoBehaviour
@@ -31,8 +32,9 @@ namespace GameManeger
 
         void Update()
         {
-            //Debug.Log(fiverImage.sprite);
+            
         }
+
         //ここで抽選する
         public void DoingSelect()
         {
@@ -65,7 +67,6 @@ namespace GameManeger
         //演習を終了する
         public void StartFiver()
         {
-            Debug.Log("消去");
             //ここでフィーバー用のImageを非表示にする
             activeManager.NoActiveFiverImage();
         }

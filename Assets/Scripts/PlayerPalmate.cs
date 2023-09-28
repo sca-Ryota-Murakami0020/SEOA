@@ -204,6 +204,7 @@ public class PlayerPalmate : MonoBehaviour
             }
         }
 
+        //フィーバー用の動物を捕まえたら
         if(hit2d.collider.tag == "fiverAnimal")
         {
             doSwaip = true;
@@ -277,6 +278,7 @@ public class PlayerPalmate : MonoBehaviour
             audios.PlayOneShot(clip);
     }
 
+    //通常のエフェクト処理
     private void Effect(GameObject animal)
     {
         //動物の位置にエフェクトを呼び出す
@@ -284,27 +286,32 @@ public class PlayerPalmate : MonoBehaviour
         //つなげた数を増やす
         effectCount++;
         //要素の削除
-        animalManager.SponeAnimal(animalInfo.Dequeue());
+        animalManager.SponeAnimal(animal);
         //Debug.Log("処理完了");
         //ここで出力する個数が配列以上になったら0に戻し終了させる
         if (effect.Length == effectCount) effectCount = 0;
     }
 
+    //フィーバー用のエフェクト表示・スコア加算
     private void FiverEffect(GameObject getAnimal)
     {
-        //
+        //獲得した動物のレイヤー名を獲得する
         string animalName = LayerMask.LayerToName(getAnimal.gameObject.layer);
+        //捕まえた動物の場所にエフェクトを呼び出す
         effect[effectCount].PlayEffect(getAnimal);
         //つなげた数を増やす
         effectCount++;
-        //要素の削除
-        if(animalName == LayerMask.LayerToName(6)) fiverAnimalManager.SponeCow(fiverAnimalInfo.Dequeue());
-        if(animalName == LayerMask.LayerToName(7)) fiverAnimalManager.SponeMouse(fiverAnimalInfo.Dequeue());
-        //Debug.Log("処理完了"); 
+        //要素の削除。それぞれのリストに戻すコルーチンを呼び出す関数を呼び出す
+        //レイヤー名が牛なら
+        if(animalName == LayerMask.LayerToName(6)) fiverAnimalManager.FiverSponeCow(getAnimal);
+        //レイヤー名がネズミなら
+        if(animalName == LayerMask.LayerToName(7)) fiverAnimalManager.FiverSponeMouse(getAnimal);
+
         //ここで出力する個数が配列以上になったら0に戻し終了させる
         if (effect.Length == effectCount) effectCount = 0;
     }
 
+    //通常の動物の獲得
     private IEnumerator ActiveEffect()
     {
         doSwaip = false;
@@ -326,7 +333,7 @@ public class PlayerPalmate : MonoBehaviour
         {
             //エフェクト再生
             //Debug.Log(animalInfo.Count);
-            Effect(animalInfo.Peek());
+            Effect(animalInfo.Dequeue());
             //動物に応じて呼び出す鳴き声を変更する
             if (getAnimalName == GetAnimals.Cow) PlayBGM(cowSE);
             if (getAnimalName == GetAnimals.Mouse) PlayBGM(mouseSE);
@@ -345,7 +352,7 @@ public class PlayerPalmate : MonoBehaviour
         yield return null;
     }
 
-    //フィーバー用の処理
+    //フィーバー用のエフェクト・スコア処理
     private IEnumerator FiverActiveEffect()
     {
         doSwaip = false;
@@ -353,12 +360,12 @@ public class PlayerPalmate : MonoBehaviour
         //牛のカウント
         if (getAnimalName == GetAnimals.Cow)
         {
-            scoreManager.AddScore(cowScore, chainCount);
+            scoreManager.FiverAddScore(cowScore, chainCount);
         }
         //ネズミのカウント
         if (getAnimalName == GetAnimals.Mouse)
         {
-            scoreManager.AddScore(mouseScore, chainCount);
+            scoreManager.FiverAddScore(mouseScore, chainCount);
         }
         //繋げた数を初期化
         chainCount = 0;
@@ -367,7 +374,7 @@ public class PlayerPalmate : MonoBehaviour
         {
             //エフェクト再生
             //Debug.Log(animalInfo.Count);
-            FiverEffect(fiverAnimalInfo.Peek());
+            FiverEffect(fiverAnimalInfo.Dequeue());
             //動物に応じて呼び出す鳴き声を変更する
             if (getAnimalName == GetAnimals.Cow) PlayBGM(cowSE);
             if (getAnimalName == GetAnimals.Mouse) PlayBGM(mouseSE);

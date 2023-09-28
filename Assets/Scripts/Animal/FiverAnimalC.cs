@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Spine;
+using System;
 using Spine.Unity;
 using GameManeger;
 
@@ -153,12 +154,12 @@ public class FiverAnimalC : MonoBehaviour
             //このオブジェクトのレイヤーが牛なら
             if(animalName == LayerMask.LayerToName(6))
             {
-                fiverAM.RuteruListCow(this.gameObject);
+                fiverAM.FiverSponeCow(this.gameObject);
             }
             //このオブジェクトのレイヤーがネズミなら
             if (animalName == LayerMask.LayerToName(7))
             {
-                fiverAM.ReturnListMouse(this.gameObject);
+                fiverAM.FiverSponeMouse(this.gameObject);
             }
         }
 
