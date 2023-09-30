@@ -101,7 +101,6 @@ public class AnimalController : MonoBehaviour
             //通所の動き
             case DoMove.MOVE:
                 Move();
-                Debug.Log("動いている");
                 break;
             //プレイヤーがデバフ中なら
             case DoMove.QUICK:
@@ -151,6 +150,7 @@ public class AnimalController : MonoBehaviour
         {
             //次のスポナーに動物を生成させる
             am.SponeAnimal();
+            Debug.Log("AnimalContoroller側の呼び出し = car");
             Destroy(this.gameObject);
         }
     }
@@ -171,6 +171,7 @@ public class AnimalController : MonoBehaviour
         if(collision.gameObject.CompareTag("OutStage"))
         {
             am.SponeAnimal();
+            Debug.Log("AnimalContoroller側の呼び出し = 飛び出し");
             Destroy(this.gameObject);
         }
         //動物同士がすり抜けあっていたら

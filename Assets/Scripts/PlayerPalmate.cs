@@ -287,6 +287,7 @@ public class PlayerPalmate : MonoBehaviour
         effectCount++;
         //次の出力を行う
         animalManager.SponeAnimal();
+        Debug.Log("PlayerPlamate側の呼び出し");
         //ここで出力する個数が配列以上になったら0に戻し終了させる
         if (effect.Length == effectCount) effectCount = 0;
     }

@@ -153,7 +153,7 @@ public class FeverAnimalC : MonoBehaviour
         if (collision.gameObject.CompareTag("car"))
         {
             //次のスポナーに動物を生成させる
-            am.SponeAnimal();
+            SelectNextSponeAnimal();
             Destroy(this.gameObject);
         }
     }
