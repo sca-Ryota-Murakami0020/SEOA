@@ -83,7 +83,7 @@ public class FeverAnimalC : MonoBehaviour
             Destroy(this.gameObject);
         }
 
-        Debug.Log("DoCount:" + tm.DoingFiver);
+        //Debug.Log("DoCount:" + tm.DoingFiver);
     }
 
     //現在のゲーム状態を調べる（ポーズ中、プレイ中など）
@@ -143,7 +143,7 @@ public class FeverAnimalC : MonoBehaviour
     public void ChangeColor() => sa.skeleton.SetColor(changeColor);
 
     //確保済みにする
-    public void GetAnimal() => this.alreadyGet = true;
+    //public void GetAnimal() => this.alreadyGet = true;
 
     //当たり判定
     private void OnCollisionEnter2D(Collision2D collision)
@@ -156,7 +156,7 @@ public class FeverAnimalC : MonoBehaviour
         if (collision.gameObject.CompareTag("car"))
         {
             //次のスポナーに動物を生成させる
-            SelectNextSponeAnimal();
+            am.SelectSponeFeverAnimal();
             Destroy(this.gameObject);
         }
     }
@@ -176,7 +176,7 @@ public class FeverAnimalC : MonoBehaviour
         //画面外に出た場合、リストの末端に戻る
         if (collision.gameObject.CompareTag("OutStage"))
         {
-            SelectNextSponeAnimal();
+            am.SelectSponeFeverAnimal();
             Destroy(this.gameObject);
         }
         //動物同士がすり抜けあっていたら
@@ -201,12 +201,5 @@ public class FeverAnimalC : MonoBehaviour
         rb2d.isKinematic = true;
         //Debug.Log("当たり判定消滅");
     }
-
-    //次のスポーンする動物を設定する
-    private void SelectNextSponeAnimal()
-    {
-
-    }
-
-    public void NotGet() => this.alreadyGet = false;
+    public void NotGet() => this.alreadyGet = true;
 }

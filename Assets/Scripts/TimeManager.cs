@@ -55,10 +55,20 @@ namespace GameManeger
         #endregion
 
         #region//ラム酒関係
+        //
+        [SerializeField] private RumC rc;
         //デバフ影響時間
         [SerializeField] private int powerDownTime;
         //実施に時間を計測する変数
-        private int countDebufTime;
+        private int countDebufTime = 0;
+        //
+        private int rumWaitTime = 0;
+        //
+        private bool doingDebuf = false;
+        //最短時間間隔
+        [SerializeField] private int minRumSponeTime;
+        //最長時間間隔
+        [SerializeField] private int maxRumSponeTime;
         #endregion
 
         public static TimeManager instance;
@@ -86,6 +96,8 @@ namespace GameManeger
             activeManager.StartBeginCountDown();
             //カレーの出現時間を設定する
             ResetCurryTime();
+            //
+            ResetRumTime();
             //フィーバー用のImageを非表示にする
             activeManager.NoActiveFiverImage();
         }
@@ -114,12 +126,21 @@ namespace GameManeger
                 {
                     CountCurryWaitTime();
                 }
+                if(!rc.CanGet)
+                {
+                    CountRumWaitTime();
+                }
                 //計測用の変数を更新
                 countTime = 0.0f;               
                 //フィーバー中なら
                 if (doingFiver)
                 {
                     Fiver();
+                }
+                //
+                if(doingDebuf)
+                {
+                    Debuf();
                 }
 
                 //10秒単位の計算(トータルのゲーム時間/10(小数点以下は切り捨て))
@@ -164,6 +185,16 @@ namespace GameManeger
                 cm.SetCurry();
                 //カレーの待機時間をリセット
                 ResetCurryTime();
+            }
+        }
+
+        private void CountRumWaitTime()
+        {
+            --countDebufTime;
+            if(countDebufTime <= 0)
+            {
+                rc.SetRum();
+                ResetRumTime();
             }
         }
 
@@ -222,6 +253,29 @@ namespace GameManeger
             cuuryWaitTime = Random.Range(minCurrySponeTime,maxCurrySponeTime);
             //Debug.Log(cuuryWaitTime);
         }
+        #endregion
+
+        private void ResetRumTime()
+        {
+            rumWaitTime = Random.Range(minRumSponeTime,maxRumSponeTime);
+        }
+
+        public void ActiveDebuf()
+        {
+            doingDebuf = true;
+        }
+
+        public void Debuf()
+        {
+            --countDebufTime;
+            //デバフ時間が終了したら
+            if (countBufTime <= 0)
+            {
+                //デバフ中を解除
+                doingFiver = false;
+                //初期化
+                countBufTime = powerUpTime;
+            }
+        }
     }
-    #endregion
 }

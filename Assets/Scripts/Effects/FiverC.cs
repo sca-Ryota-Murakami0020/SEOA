@@ -61,7 +61,6 @@ namespace GameManeger
             ani.SetTrigger("DoShow");
             //ゲーム時間の計測を再開する
             timeManager.ActiveDoCount();
-            timeManager.ActiveFiverTime();
         }
 
         //演習を終了する

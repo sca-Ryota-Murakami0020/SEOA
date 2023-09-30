@@ -184,10 +184,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814db20fb669c044e9649bb8a7c535dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSpeed: 0.01
+  normalSpeed: 0.02
   swaipSpeed: 0.002
   sa: {fileID: 7497702201277522848}
-  changeColor: {r: 0.6226415, g: 0.572899, b: 0.51338553, a: 0.5176471}
+  changeColor: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
   normalColor: {r: 0, g: 0, b: 0, a: 0}
   animalCollider2d: {fileID: 6358138699173655946}
   rb2d: {fileID: 8186700258142200963}

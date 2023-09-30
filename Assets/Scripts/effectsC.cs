@@ -17,10 +17,12 @@ public class effectsC : MonoBehaviour
 
     public void PlayEffect(GameObject animal)
     {
+       // Debug.Log("sannsyou");
         //エフェクトの位置を動物の座標に合わせて移動する
         this.transform.position = animal.transform.position;
         //動物を削除する
         Destroy(animal);
+        Debug.Log("参照した者" + animal);
         //ここでアニメーション内のTriggerを起動させる
         effect.SetTrigger("Play");
         //表示時間を定めるためのコルーチンを起動させる

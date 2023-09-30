@@ -266,14 +266,12 @@ public class AnimalManager : MonoBehaviour
         Instantiate(SelectAnimal(),
             animalSponer[randNum].transform.position,
             animalSponer[randNum].transform.rotation);
-        Debug.Log("kakuninn");
     }
 
     //ネズミ用のフィーバータイムを行う
     public void FeverMouse()
     {
         sponeAnimalMouse = true;
-        Debug.Log("ネズミの");
     }
     //フィーバーフラグをfalseにする。（ネズミ）
     public void FinishFeverMouse()
@@ -284,7 +282,6 @@ public class AnimalManager : MonoBehaviour
     public void FeverCow()
     {
         sponeAnimalCow = true;
-        Debug.Log("牛の");
     }
     //フィーバーフラグをfalseにする。（牛）
     public void FinishFeverCow()
@@ -304,7 +301,7 @@ public class AnimalManager : MonoBehaviour
                 Instantiate(feverMouseObject,
                     animalSponer[count].transform.position,
                     animalSponer[count].transform.rotation);
-                Debug.Log("ネズミの配置");
+                //Debug.Log("ネズミの配置");
             }
 
             //配置先のスポナーから選ばれた動物を呼び出す(牛用)
@@ -313,7 +310,7 @@ public class AnimalManager : MonoBehaviour
                 Instantiate(feverCowObject,
                     animalSponer[count].transform.position,
                     animalSponer[count].transform.rotation);
-                Debug.Log("牛の配置");
+                //Debug.Log("牛の配置");
             }
         }
     }
@@ -325,12 +322,14 @@ public class AnimalManager : MonoBehaviour
         if(sponeAnimalCow)
         {
             FeverSponeAnimal(feverCowObject);
+            //Debug.Log("cow");
         }
 
         //ネズミ用の出力
         if(sponeAnimalMouse)
         {
             FeverSponeAnimal(feverMouseObject);
+            //Debug.Log("mouse");
         }
     }
 
@@ -342,10 +341,10 @@ public class AnimalManager : MonoBehaviour
         //配置先の設定
         while (true)
         {
-            randNum = Random.Range(-1, animalSponer.Length);
+            randNum = Random.Range(0, animalSponer.Length);
             //前回出力したスポナーと異なるなら
             //新しく呼び出すスポナーを決定する
-            if (randNum != oldSponerNumber || randNum != -1)
+            if (randNum != oldSponerNumber)
             {
                 break;
             }

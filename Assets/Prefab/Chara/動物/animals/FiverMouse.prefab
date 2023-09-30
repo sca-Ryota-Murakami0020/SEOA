@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 814db20fb669c044e9649bb8a7c535dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSpeed: 0.03
+  normalSpeed: 0.02
   swaipSpeed: 0.004
   sa: {fileID: 408447148730589584}
   changeColor: {r: 0.2924528, g: 0.2714845, b: 0.2714845, a: 0.56078434}

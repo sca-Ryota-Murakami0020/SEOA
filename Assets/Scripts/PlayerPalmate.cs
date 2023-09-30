@@ -138,6 +138,7 @@ public class PlayerPalmate : MonoBehaviour
                 if(timeManager.DoingFiver)
                 {
                     StartCoroutine(FiverActiveEffect());
+                    //Debug.Log("コルーチン開始");
                 }
 
                 else
@@ -243,6 +244,7 @@ public class PlayerPalmate : MonoBehaviour
                     fiverAnimalC.NotGet();
                     //要素の末端に追加する
                     fiverAnimalInfo.Enqueue(hit2d.collider.gameObject);
+                    Debug.Log("できた:" + fiverAnimalInfo.Peek());
                     //つなげている数を更新
                     chainCount += 1;
                 }
@@ -295,14 +297,12 @@ public class PlayerPalmate : MonoBehaviour
     //フィーバー用のエフェクト表示・スコア加算
     private void FiverEffect(GameObject getAnimal)
     {
-        //獲得した動物のレイヤー名を獲得する
-        string animalName = LayerMask.LayerToName(getAnimal.gameObject.layer);
         //捕まえた動物の場所にエフェクトを呼び出す
         effect[effectCount].PlayEffect(getAnimal);
         //つなげた数を増やす
         effectCount++;
         //要素の削除。それぞれのリストに戻すコルーチンを呼び出す関数を呼び出す
-        animalManager.SelectSponeFeverAnimal();
+        //animalManager.SelectSponeFeverAnimal();
 
         //ここで出力する個数が配列以上になったら0に戻し終了させる
         if (effect.Length == effectCount) effectCount = 0;
@@ -366,11 +366,13 @@ public class PlayerPalmate : MonoBehaviour
         }
         //繋げた数を初期化
         chainCount = 0;
+        //Debug.Log("animalinfo:" + fiverAnimalInfo.Count);
         //エフェクトを呼び出すオブジェクトの数が0になるまで行う
         while (fiverAnimalInfo.Count != 0)
         {
             //エフェクト再生
             //Debug.Log(animalInfo.Count);
+            Debug.Log("kore" + fiverAnimalInfo.Peek());
             FiverEffect(fiverAnimalInfo.Dequeue());
             //動物に応じて呼び出す鳴き声を変更する
             if (getAnimalName == GetAnimals.Cow) PlayBGM(cowSE);
