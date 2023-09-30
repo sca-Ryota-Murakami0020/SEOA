@@ -71,16 +71,19 @@ public class FeverAnimalC : MonoBehaviour
         //Debug.Log("debag" + TimeManager.instance.DoCount);
 
         //ゲーム進行が中断されたら
-        if (!tm.DoCount && !tm.DoingFiver)
+        if (!tm.DoCount && tm.DoingFiver)
         {
             this.canMove = DoMove.NOT;
         }
 
-        //フィーバーになったらこのオブジェクトを破壊する
-        if (tm.DoingFiver)
+        //フィーバーが終了したらこのオブジェクトを破壊する
+        if (!tm.DoingFiver)
         {
+            Debug.Log("haitta");
             Destroy(this.gameObject);
         }
+
+        Debug.Log("DoCount:" + tm.DoingFiver);
     }
 
     //現在のゲーム状態を調べる（ポーズ中、プレイ中など）

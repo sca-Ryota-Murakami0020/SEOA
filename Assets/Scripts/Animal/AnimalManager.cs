@@ -266,12 +266,14 @@ public class AnimalManager : MonoBehaviour
         Instantiate(SelectAnimal(),
             animalSponer[randNum].transform.position,
             animalSponer[randNum].transform.rotation);
+        Debug.Log("kakuninn");
     }
 
     //ネズミ用のフィーバータイムを行う
     public void FeverMouse()
     {
-        sponeAnimalMouse = false;
+        sponeAnimalMouse = true;
+        Debug.Log("ネズミの");
     }
     //フィーバーフラグをfalseにする。（ネズミ）
     public void FinishFeverMouse()
@@ -282,6 +284,7 @@ public class AnimalManager : MonoBehaviour
     public void FeverCow()
     {
         sponeAnimalCow = true;
+        Debug.Log("牛の");
     }
     //フィーバーフラグをfalseにする。（牛）
     public void FinishFeverCow()
@@ -301,6 +304,7 @@ public class AnimalManager : MonoBehaviour
                 Instantiate(feverMouseObject,
                     animalSponer[count].transform.position,
                     animalSponer[count].transform.rotation);
+                Debug.Log("ネズミの配置");
             }
 
             //配置先のスポナーから選ばれた動物を呼び出す(牛用)
@@ -309,6 +313,7 @@ public class AnimalManager : MonoBehaviour
                 Instantiate(feverCowObject,
                     animalSponer[count].transform.position,
                     animalSponer[count].transform.rotation);
+                Debug.Log("牛の配置");
             }
         }
     }

@@ -211,7 +211,7 @@ namespace GameManeger
         //フィーバー中にする
         public void ActiveFiverTime()
         {
-            Debug.Log("doingFiverの切り替え");
+            //Debug.Log("doingFiverの切り替え");
             //フィーバー中にする
             doingFiver = true;
         }
