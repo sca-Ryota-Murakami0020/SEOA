@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using GameManeger;
 
 public class AnimalManager : MonoBehaviour
 {
+    /*
     #region//変数関係
     //前回のスポナーの番号
     private int oldSponerNumber;
@@ -171,4 +173,183 @@ public class AnimalManager : MonoBehaviour
         ac.ResetPar();
     }
     #endregion
+    */
+
+    #region//オブジェクト関係
+    //スポナー
+    [SerializeField] private GameObject[] animalSponer;
+    //牛のオブジェクト
+    [SerializeField] private GameObject cowObject;
+    //ネズミのオブジェクト
+    [SerializeField] private GameObject mouseObject;
+    //フィーバー用の牛のオブジェクト
+    [SerializeField] private GameObject feverCowObject;
+    //フィーバー用のネズミのオブジェクト
+    [SerializeField] private  GameObject feverMouseObject;
+    #endregion
+
+    #region//変数関係
+    //前回のスポナーの番号
+    private int oldSponerNumber = 0;
+    //フィーバー中に呼び出す動物を牛だけに制限するフラグ
+    private bool sponeAnimalCow = false;
+    //フィーバー中に呼び出す動物をネズミだけに制限するフラグ
+    private bool sponeAnimalMouse = false;
+    //最大待機時間
+    [Header("最大待機時間")]
+    [SerializeField]
+    private int maxWaitTime;
+    //最小待機時間
+    [Header("最小待機時間")]
+    [SerializeField]
+    private int minWaitTime;
+    //PlayerPalmeta
+    [SerializeField] private PlayerPalmate pp;
+    //TimeManager
+    [SerializeField] private TimeManager tm;
+    #endregion
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    //最初の配置
+    public void SetAnimals()
+    {
+        //最初の配置
+        for (int count = 0; count < animalSponer.Length; count++)
+        {
+            //呼び出す動物を設定する
+            GameObject selectAnimal = SelectAnimal();
+            //配置先のスポナーから選ばれた動物を呼び出す
+            Instantiate(SelectAnimal(),
+                animalSponer[count].transform.position,
+                animalSponer[count].transform.rotation);
+        }
+    }
+
+    //出力する動物を設定する
+    public GameObject SelectAnimal()
+    {
+        GameObject selectObject = null;
+        int randNum = Random.Range(0, 2);
+        int num = randNum % 2;
+        //牛の出力
+        if(num != 0) selectObject = cowObject;
+        //
+        if(num == 0) selectObject = mouseObject;
+        //Debug.Log("呼び出すオブジェクト" + selectObject);
+        return selectObject;
+    }
+
+    //動物をスポナーに呼び出す
+    public void SponeAnimal()
+    {
+        //ローカル変数を作る
+        int randNum = 0;
+        //配置先の設定
+        while (true)
+        {
+            randNum = Random.Range(0, animalSponer.Length);
+            //前回出力したスポナーと異なるなら
+            //新しく呼び出すスポナーを決定する
+            if (randNum != oldSponerNumber)
+            {
+                break;
+            }
+        }
+
+        //スポナーを設し、選ばれた動物を呼び出す
+        //この際にスポナーが持っている回転と同じ値を動物に与える
+        Instantiate(SelectAnimal(),
+            animalSponer[randNum].transform.position,
+            animalSponer[randNum].transform.rotation);
+    }
+
+    //ネズミ用のフィーバータイムを行う
+    public void FeverMouse()
+    {
+        sponeAnimalMouse = false;
+    }
+    //フィーバーフラグをfalseにする。（ネズミ）
+    public void FinishFeverMouse()
+    {
+        sponeAnimalMouse = false;
+    }
+    //牛用のフィーバータイムを行う
+    public void FeverCow()
+    {
+        sponeAnimalCow = true;
+    }
+    //フィーバーフラグをfalseにする。（牛）
+    public void FinishFeverCow()
+    {
+        sponeAnimalCow = false;
+    }
+
+    //
+    public void SetStartFeverAnimals()
+    {
+        for(int count = 0; count < animalSponer.Length; count++)
+        {
+            //配置先のスポナーから選ばれた動物を呼び出す(ネズミ用)
+            if (sponeAnimalMouse)
+            {
+
+                Instantiate(feverMouseObject,
+                    animalSponer[count].transform.position,
+                    animalSponer[count].transform.rotation);
+            }
+
+            //配置先のスポナーから選ばれた動物を呼び出す(牛用)
+            if (sponeAnimalCow)
+            {
+                Instantiate(feverCowObject,
+                    animalSponer[count].transform.position,
+                    animalSponer[count].transform.rotation);
+            }
+        }
+    }
+
+    //フィーバー用の動物呼び出し
+    public void SelectSponeFeverAnimal()
+    {
+        //牛用の出力
+        if(sponeAnimalCow)
+        {
+            FeverSponeAnimal(feverCowObject);
+        }
+
+        //ネズミ用の出力
+        if(sponeAnimalMouse)
+        {
+            FeverSponeAnimal(feverMouseObject);
+        }
+    }
+
+    //フィーバー用の動物の出力
+    private void FeverSponeAnimal(GameObject animal)
+    {
+        //ローカル変数を作る
+        int randNum = 0;
+        //配置先の設定
+        while (true)
+        {
+            randNum = Random.Range(-1, animalSponer.Length);
+            //前回出力したスポナーと異なるなら
+            //新しく呼び出すスポナーを決定する
+            if (randNum != oldSponerNumber || randNum != -1)
+            {
+                break;
+            }
+        }
+
+        //スポナーを設し、選ばれた動物を呼び出す
+        //この際にスポナーが持っている回転と同じ値を動物に与える
+        Instantiate(animal,
+            animalSponer[randNum].transform.position,
+            animalSponer[randNum].transform.rotation);
+    }
 }

@@ -18,8 +18,6 @@ public class PlayerPalmate : MonoBehaviour
     private AudioSource audios = null;
     //AnimalManager
     [SerializeField] private AnimalManager animalManager;
-    //FiverAnimalManager
-    [SerializeField] private FiverAnimalManager fiverAnimalManager;
     //ActiveManager
     [SerializeField] private ActiveManager activeManager;
     //エフェクト
@@ -101,6 +99,7 @@ public class PlayerPalmate : MonoBehaviour
     public bool DoChain
     {
         get { return this.doSwaip;}
+        set { this.doSwaip = value;}
     }
 
     public PlayerState PlayerSituation
@@ -114,6 +113,8 @@ public class PlayerPalmate : MonoBehaviour
         set { this.animalInfo = value;}
     }
     #endregion
+
+    public static PlayerPalmate instance;
 
     // Start is called before the first frame update
     void Start()
@@ -187,15 +188,14 @@ public class PlayerPalmate : MonoBehaviour
                 //FiverAnimalC fiverAnimalC = hit2d.collider.gameObject.GetComponent<FiverAnimalC>();
                 AnimalController ac = hit2d.collider.gameObject.GetComponent<AnimalController>();
                 //同じ動物に当たってしまっていたら以降の処理はしない
-                if (!ac.CanGet) return;
+                if (ac.AlreadyGet) return;
 
                 //もしつなげようとしている動物が一番最初の動物と同じ場合
-                if (ac.CanGet)
+                if (!ac.AlreadyGet)
                 {
                     PlayBGM(touchSE);
-                    //Debug.Log("色の変更開始");
                     ac.ChangeColor();
-                    ac.NotGet();
+                    ac.GetAnimal();
                     //要素の末端に追加する
                     animalInfo.Enqueue(hit2d.collider.gameObject);                    
                     //つなげている数を更新
@@ -229,13 +229,13 @@ public class PlayerPalmate : MonoBehaviour
             {
                 //捕まえた動物の関数を取得する
                 //AnimalController animalController = hit2d.collider.gameObject.GetComponent<AnimalController>();
-                FiverAnimalC fiverAnimalC = hit2d.collider.gameObject.GetComponent<FiverAnimalC>();
+                FeverAnimalC fiverAnimalC = hit2d.collider.gameObject.GetComponent<FeverAnimalC>();
 
                 //同じ動物に当たってしまっていたら以降の処理はしない
-                if (!fiverAnimalC.CanGet) return;
+                if (fiverAnimalC.AlreadyGet) return;
 
                 //もしつなげようとしている動物が一番最初の動物と同じ場合
-                if (fiverAnimalC.CanGet)
+                if (!fiverAnimalC.AlreadyGet)
                 {
                     PlayBGM(touchSE);
                     //Debug.Log("色の変更開始");
@@ -285,9 +285,8 @@ public class PlayerPalmate : MonoBehaviour
         effect[effectCount].PlayEffect(animal);
         //つなげた数を増やす
         effectCount++;
-        //要素の削除
-        animalManager.SponeAnimal(animal);
-        //Debug.Log("処理完了");
+        //次の出力を行う
+        animalManager.SponeAnimal();
         //ここで出力する個数が配列以上になったら0に戻し終了させる
         if (effect.Length == effectCount) effectCount = 0;
     }
@@ -302,10 +301,7 @@ public class PlayerPalmate : MonoBehaviour
         //つなげた数を増やす
         effectCount++;
         //要素の削除。それぞれのリストに戻すコルーチンを呼び出す関数を呼び出す
-        //レイヤー名が牛なら
-        if(animalName == LayerMask.LayerToName(6)) fiverAnimalManager.FiverSponeCow(getAnimal);
-        //レイヤー名がネズミなら
-        if(animalName == LayerMask.LayerToName(7)) fiverAnimalManager.FiverSponeMouse(getAnimal);
+        animalManager.SelectSponeFeverAnimal();
 
         //ここで出力する個数が配列以上になったら0に戻し終了させる
         if (effect.Length == effectCount) effectCount = 0;

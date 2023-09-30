@@ -40,7 +40,7 @@ namespace GameManeger
         //CurryMoveC
         [SerializeField] private CurryMoverC cm;
         //]
-        [SerializeField] private FiverAnimalManager fam;
+        [SerializeField] private AnimalManager am;
 
         //カレーの待機時間
         private int cuuryWaitTime = 0;
@@ -61,14 +61,18 @@ namespace GameManeger
         private int countDebufTime;
         #endregion
 
+        public static TimeManager instance;
+
         public bool DoCount
         {
             get { return this.doCount;}
+            set { this.doCount = value;}
         }
 
         public bool DoingFiver
         {
             get { return this.doingFiver;}
+            set { this.doingFiver = value;}
         }
 
         // Start is called before the first frame update
@@ -197,7 +201,8 @@ namespace GameManeger
             {
                 //フィーバー中を解除
                 doingFiver = false;
-                fam.NoActiveFiver();
+                //フィーバー状態の初期化
+                activeManager.FinishFever();
                 //初期化
                 countBufTime = powerUpTime;
             }
@@ -209,7 +214,6 @@ namespace GameManeger
             Debug.Log("doingFiverの切り替え");
             //フィーバー中にする
             doingFiver = true;
-            fam.ActiveFiver();
         }
 
         //カレーの時間間隔を設定する

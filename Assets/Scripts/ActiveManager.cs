@@ -11,7 +11,7 @@ namespace GameManeger
         //FiverC
         [SerializeField] private FiverC fc;
         //
-        [SerializeField] private FiverAnimalManager fam;
+        [SerializeField] private AnimalManager am;
 
         //オブジェクト関係
         //フィーバー用のImage
@@ -47,27 +47,22 @@ namespace GameManeger
         //牛のフィーバーを起動する
         public void ActiveFiverMouse()
         {
-            fam.SetMouseIndex();
-            fam.MouseFiver();
+            am.SelectSponeFeverAnimal();
+            am.FeverMouse();
         }
 
         //ネズミのフィーバーを起動する
         public void ActiveFiverCow()
         {
-            fam.SetCowIndex();
-            fam.CowFiver();
+            am.SelectSponeFeverAnimal();
+            am.FeverCow();
         }
 
-        //動物たちを呼び出す
-        public void ActiveFiverAnimals(GameObject animal)
+        //フィーバーを終了する
+        public void FinishFever()
         {
-            animal.SetActive(true);
-        }
-
-        //動物たちを非表示にする
-        public void NoActiveFiverAnimals(GameObject animal)
-        {
-
+            am.FinishFeverCow();
+            am.FinishFeverMouse();
         }
         #endregion
 

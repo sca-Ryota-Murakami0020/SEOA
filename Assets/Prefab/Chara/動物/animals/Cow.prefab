@@ -179,12 +179,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 938815285cdac3e4782bbad48bb8c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalSpeed: 0.06
-  powerdownSpeed: 0.02
-  slowSpeed: 0.1
-  pp: {fileID: 0}
-  tm: {fileID: 0}
-  am: {fileID: 0}
+  normalSpeed: 0.007
+  upSpeed: 0.01
+  swaipSpeed: 0.2
   sa: {fileID: 6277589610635493044}
   changeColor: {r: 0.5283019, g: 0.50537556, b: 0.50537556, a: 1}
   normalColor: {r: 1, g: 1, b: 1, a: 1}

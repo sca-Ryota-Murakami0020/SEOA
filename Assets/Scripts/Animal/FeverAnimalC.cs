@@ -1,25 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameManeger;
+using UnityEditor;
 using Spine;
+using System;
 using Spine.Unity;
+using GameManeger;
 
-public class AnimalController : MonoBehaviour
+public class FeverAnimalC : MonoBehaviour
 {
-    //
+    //TimeManager
     private TimeManager tm;
-    //
+    //PlayerPlamate
     private PlayerPalmate pp;
-    //
+    //AnimalManager
     private AnimalManager am;
 
     //捕まえられたフラグ
     private bool alreadyGet = false;
     //速度
     [SerializeField] private float normalSpeed;
-    //デバフ中の速度
-    [SerializeField] private float upSpeed;
     //スワイプ中のスピード
     [SerializeField] private float swaipSpeed;
 
@@ -39,8 +39,7 @@ public class AnimalController : MonoBehaviour
     {
         NOT,
         MOVE,
-        QUICK
-        //SLOW
+        SLOW
     };
 
     DoMove canMove = DoMove.NOT;
@@ -65,6 +64,7 @@ public class AnimalController : MonoBehaviour
         //ゲームが進行中なら
         if (tm.DoCount)
         {
+            SelectState();
             SelectMove();
         }
 
@@ -76,16 +76,27 @@ public class AnimalController : MonoBehaviour
             this.canMove = DoMove.NOT;
         }
 
-        if(tm.DoCount && !tm.DoingFiver)
-        {
-            this.canMove = DoMove.MOVE;
-        }
-
         //フィーバーになったらこのオブジェクトを破壊する
         if (tm.DoingFiver)
         {
             Destroy(this.gameObject);
         }
+    }
+
+    //現在のゲーム状態を調べる（ポーズ中、プレイ中など）
+    private void SelectState()
+    {
+         //プレイヤーがスワイプ中なら
+         if (pp.DoChain)
+         {
+             this.canMove = DoMove.SLOW;
+         }
+
+         //プレイヤーが繋げていない状態なら
+         if (!pp.DoChain)
+         {
+             this.canMove = DoMove.MOVE;
+         }
     }
 
     //行動の条件分岐を行う
@@ -101,16 +112,11 @@ public class AnimalController : MonoBehaviour
             //通所の動き
             case DoMove.MOVE:
                 Move();
-                Debug.Log("動いている");
-                break;
-            //プレイヤーがデバフ中なら
-            case DoMove.QUICK:
-                QuickMove();
                 break;
             //繋げている状態
-            //case DoMove.SLOW:
-                //SlowMove();
-                //break;
+            case DoMove.SLOW:
+                 SlowMove();
+                break;
         }
 
         //捕まっている状態なら
@@ -126,11 +132,8 @@ public class AnimalController : MonoBehaviour
     //通常の動き
     private void Move() => this.transform.position += this.transform.up * normalSpeed;
 
-    //デバフ中の動き
-    private void QuickMove() => this.transform.position += this.transform.up * upSpeed;
-
     //繋げている時の動き
-    //private void SlowMove() => this.transform.position += this.transform.up * normalSpeed * swaipSpeed;
+    private void SlowMove() => this.transform.position += this.transform.up * normalSpeed * swaipSpeed;
 
     //捕まっている状態の時に色を変える
     //確保された際にオブジェクトのカラーを変更する
@@ -154,11 +157,11 @@ public class AnimalController : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
-  
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         //進行方向に動物がいれば
-        if((collision.gameObject.CompareTag("plusAngle")||collision.gameObject.CompareTag("animal")))
+        if ((collision.gameObject.CompareTag("plusAngle") || collision.gameObject.CompareTag("animal")))
         {
             NoActiveisTriggerAnimal();
         }
@@ -168,9 +171,9 @@ public class AnimalController : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         //画面外に出た場合、リストの末端に戻る
-        if(collision.gameObject.CompareTag("OutStage"))
+        if (collision.gameObject.CompareTag("OutStage"))
         {
-            am.SponeAnimal();
+            SelectNextSponeAnimal();
             Destroy(this.gameObject);
         }
         //動物同士がすり抜けあっていたら
@@ -195,4 +198,12 @@ public class AnimalController : MonoBehaviour
         rb2d.isKinematic = true;
         //Debug.Log("当たり判定消滅");
     }
+
+    //次のスポーンする動物を設定する
+    private void SelectNextSponeAnimal()
+    {
+
+    }
+
+    public void NotGet() => this.alreadyGet = false;
 }

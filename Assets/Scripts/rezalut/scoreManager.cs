@@ -106,15 +106,17 @@ namespace GameManeger
                 _currentDisplayScore = (int)localOldScore;
             }
             localOldScore = _currentDisplayScore;
-            //Debug.Log(_score - _currentDisplayScore);
-
+           
+            
             for (int count = 0; count < imageNumber.Length; count++)
             {
-                float showNum = localOldScore % 10;
+                int showNum = (int)localOldScore % 10;
+                //Debug.Log(showNum);
+
                 imageNumber[count].sprite = numberImage[(int)showNum];
                 localOldScore /= 10;
             }
-            
+           // Debug.Log(imageNumber[0]);
         }
 
         //表示するスコアの桁数・コンマの表示を更新
@@ -137,7 +139,7 @@ namespace GameManeger
             if(score > 1000) return;
             for (int count = 0; count < 4; count++)
             {
-                imageNumber[count].sprite = numberImage[0];
+                //imageNumber[count].sprite = numberImage[0];
                 imageNumber[count].enabled = true;
             }
             commaImage[0].enabled = true;
@@ -163,7 +165,7 @@ namespace GameManeger
             //タップで終わらせている時
             if (count == 1)
             {
-                _score += score * 1000;
+                _score += score;
             }
             //つなげている状態
             if (count >= 2)
