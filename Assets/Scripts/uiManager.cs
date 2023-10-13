@@ -4,12 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-namespace GameManeger
+namespace GameManager
 {
     public class uiManager : MonoBehaviour
     {
         //GameManager
-        private GameManager gm;
+        //private GameManager gm;
         //表示するUI
         //今回はボタンの操作をuiManagerに任せるためにSetActiveによる
         //表示の操作とする。
@@ -19,7 +19,7 @@ namespace GameManeger
 
         void Start()
         {
-            gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+            //gm = GameObject.Find("GameManager").GetComponent<GameManager>();
             //UI表示の初期化
             pauseUI.SetActive(false);
         }
@@ -45,14 +45,14 @@ namespace GameManeger
         //タイトルへ
         public void GoTitle()
         {
-            gm.PlayerScore = 0;
+            //gm.PlayerScore = 0;
             SceneManager.LoadScene("TITLE");
         }
 
         //リトライ
         public void LoadGame()
         {
-            gm.PlayerScore = 0;
+            //gm.PlayerScore = 0;
             SceneManager.LoadScene("GameScene");
         }
 

@@ -5,7 +5,7 @@ using UnityEditor;
 using Spine;
 using System;
 using Spine.Unity;
-using GameManeger;
+using GameManager;
 
 public class FeverAnimalC : MonoBehaviour
 {

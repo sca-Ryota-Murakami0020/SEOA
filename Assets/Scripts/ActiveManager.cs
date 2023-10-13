@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameManeger
+namespace GameManager
 {
     public class ActiveManager : MonoBehaviour
     {
@@ -44,24 +44,6 @@ namespace GameManeger
             ActiveFiverImage();
             //フィーバーアニメーションを開始する
             fc.OpenSelectIcon();
-        }
-
-        //牛のフィーバーを起動する
-        public void ActiveFiverMouse()
-        {
-            tm.ActiveFiverTime();
-            am.FeverMouse();
-            am.SelectSponeFeverAnimal();
-            am.SetStartFeverAnimals();
-        }
-
-        //ネズミのフィーバーを起動する
-        public void ActiveFiverCow()
-        {
-            tm.ActiveFiverTime();
-            am.FeverCow();
-            am.SelectSponeFeverAnimal();
-            am.SetStartFeverAnimals();
         }
 
         //フィーバーを終了する

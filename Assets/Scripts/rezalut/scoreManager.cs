@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameManeger
+namespace GameManager
 {
     public class scoreManager : MonoBehaviour
     {
@@ -100,6 +100,7 @@ namespace GameManeger
             if (_score - _currentDisplayScore < 0) _currentDisplayScore += (float)_score - _currentDisplayScore;
             else
             {
+                //0.3秒でスコア加算の演出を終わらせるための変数  
                 float _scoreMaxSec = 0.3333f;
                 //１ずつ加算していくようにするための加算方法
                 localOldScore += (_score - oldScore) / (_scoreMaxSec / Time.deltaTime);
@@ -116,7 +117,6 @@ namespace GameManeger
                 imageNumber[count].sprite = numberImage[(int)showNum];
                 localOldScore /= 10;
             }
-           // Debug.Log(imageNumber[0]);
         }
 
         //表示するスコアの桁数・コンマの表示を更新
@@ -139,38 +139,26 @@ namespace GameManeger
             if(score > 1000) return;
             for (int count = 0; count < 4; count++)
             {
-                //imageNumber[count].sprite = numberImage[0];
+
                 imageNumber[count].enabled = true;
             }
             commaImage[0].enabled = true;
-
-            //獲得スコアに応じて表示するスコアの桁数を更新する
-            //int showScoreNumber = score / 10;
-            //if (showScoreNumber >= 4)
-            //{
-            //    if (showScoreNumber >= 5 && commaImage[1].enabled == false)
-            //    {
-            //        commaImage[1].enabled = true;
-            //    }
-            //    imageNumber[showScoreNumber].enabled = true;
-            //}
         }
 
         //通常のスコア加算
-        //呼び出し元ー＞PlayerPlamate
         public void AddScore(int score, int count)
         {
+            //比較するためのスコアを記録
             oldScore = _score;
-            //通常のスコア加算
-            //タップで終わらせている時
+
             if (count == 1)
             {
                 _score += score;
             }
-            //つなげている状態
-            if (count >= 2)
+            
+            else
             {
-                _score += score * count + (int)((score * count) * 0.1);
+                _score += (int)(score * count * 1.1);
             }
         }
 
@@ -180,15 +168,15 @@ namespace GameManeger
         {
             //比較するためのスコアを記録
             oldScore = _score;
-            //スコア加算
+            
             if(count == 1)
             {
-                _score += getScore + (int)(getScore * 0.2); 
+                _score += (int)(getScore * 1.2); 
             }
-            //つなげている状態
-            if(count >= 2)
+            
+            else
             {
-                _score += getScore * count + (int)((getScore * count) * 0.2);
+                _score += (int)((getScore * count) * 1.2);
             }
         }
     }

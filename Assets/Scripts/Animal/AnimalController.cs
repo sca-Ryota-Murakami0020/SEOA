@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameManeger;
+using GameManager;
 using Spine;
 using Spine.Unity;
 

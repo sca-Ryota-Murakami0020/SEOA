@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace GameManeger
+namespace GameManager
 {
     public class TimeManager : MonoBehaviour
     {

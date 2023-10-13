@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using GameManeger;
+using GameManager;
 
 public class CurryMoverC : MonoBehaviour
 {

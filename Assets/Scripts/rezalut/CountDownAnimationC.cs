@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GameManeger
+namespace GameManager
 {
     public class CountDownAnimationC : MonoBehaviour
     {
