@@ -102,7 +102,10 @@ public class CurryMoverC : MonoBehaviour
     //スポナーの位置に配置する
     public void SetCurry()
     {
-        if(sponeCurryCount <= 2)
+        //出現回数を増やす
+        sponeCurryCount++;
+        //出現回数が2回までなら
+        if (sponeCurryCount <= 2)
         {
             //スポナーの位置を決める
             int sponerPos = Random.Range(0, currySponer.Length);
@@ -115,9 +118,7 @@ public class CurryMoverC : MonoBehaviour
                 MoveLeft();
             }
             //カレーの進行を許可する
-            ActiveCanFlag();
-            //出現回数を増やす
-            sponeCurryCount++;
+            ActiveCanFlag();           
         }     
     }
 }

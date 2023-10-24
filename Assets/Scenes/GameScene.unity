@@ -993,7 +993,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreManager: {fileID: 587330904691086497}
   timeManager: {fileID: 1186607859}
-  gameManager: {fileID: 281120427}
   animalManager: {fileID: 104225361}
   activeManager: {fileID: 1134734844}
   effect:
@@ -2279,12 +2278,12 @@ MonoBehaviour:
   cm: {fileID: 1616207806}
   am: {fileID: 104225361}
   powerUpTime: 13
-  minCurrySponeTime: 3
-  maxCurrySponeTime: 9
+  minCurrySponeTime: 20
+  maxCurrySponeTime: 25
   rc: {fileID: 1334060137}
   powerDownTime: 8
-  minRumSponeTime: 0
-  maxRumSponeTime: 0
+  minRumSponeTime: 10
+  maxRumSponeTime: 15
 --- !u!4 &1186607860
 Transform:
   m_ObjectHideFlags: 0
@@ -3727,10 +3726,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a20fa15ad5aaf24eaa410cec7d84b45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ani: {fileID: 2114934707}
-  timeManager: {fileID: 1186607859}
-  curryMoveC: {fileID: 1616207806}
+  animator: {fileID: 0}
+  curryMoveCon: {fileID: 0}
   activeManager: {fileID: 1134734844}
+  animalManager: {fileID: 0}
+  tm: {fileID: 0}
 --- !u!1 &13813625372504764
 GameObject:
   m_ObjectHideFlags: 0
